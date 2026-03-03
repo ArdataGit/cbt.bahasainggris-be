@@ -1,0 +1,55 @@
+# ========================
+# Node Modules
+# ========================
+node_modules/
+
+# ========================
+# Environment Variables
+# ========================
+.env
+.env.*
+!.env.example
+
+# ========================
+# Logs
+# ========================
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+out.txt
+
+# ========================
+# Build Output
+# ========================
+dist/
+build/
+out/
+
+# ========================
+# Prisma
+# ========================
+prisma/migrations/*
+!prisma/migrations/.keep
+
+# ========================
+# MacOS
+# ========================
+.DS_Store
+
+# ========================
+# VSCode
+# ========================
+.vscode/
+
+# ========================
+# Coverage
+# ========================
+coverage/
+
+# ========================
+# Temporary Files
+# ========================
+tmp/
+temp/

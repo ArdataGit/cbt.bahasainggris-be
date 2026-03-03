@@ -1,0 +1,208 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  password  String
+  role      String   @default("user")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ReadingCategory {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?
+  timer       Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  readings    Reading[]
+}
+
+model Reading {
+  id          Int               @id @default(autoincrement())
+  title       String
+  content     String            @db.LongText
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  SoalReading SoalReading[]
+  categories  ReadingCategory[]
+  pakets      Paket[]
+}
+
+model SoalReading {
+  id        Int             @id @default(autoincrement())
+  readingId Int
+  reading   Reading         @relation(fields: [readingId], references: [id])
+  question  String          @db.LongText
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  options   ReadingOption[]
+}
+
+model ReadingOption {
+  id            Int         @id @default(autoincrement())
+  soalReadingId Int
+  soalReading   SoalReading @relation(fields: [soalReadingId], references: [id], onDelete: Cascade)
+  text          String      @db.Text
+  isCorrect     Boolean     @default(false)
+}
+
+model ListeningCategory {
+  id          Int         @id @default(autoincrement())
+  name        String
+  description String?
+  timer       Int
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  listenings  Listening[]
+}
+
+model Listening {
+  id           Int                 @id @default(autoincrement())
+  title        String
+  content      String              @db.LongText
+  audioUrl     String?
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+  SoalListeing SoalListeing[]
+  categories   ListeningCategory[]
+  pakets       Paket[]
+}
+
+model SoalListeing {
+  id         Int               @id @default(autoincrement())
+  listeingId Int
+  listeing   Listening         @relation(fields: [listeingId], references: [id])
+  question   String            @db.LongText
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+  options    ListeningOption[]
+}
+
+model ListeningOption {
+  id             Int          @id @default(autoincrement())
+  soalListeingId Int
+  soalListeing   SoalListeing @relation(fields: [soalListeingId], references: [id], onDelete: Cascade)
+  text           String       @db.Text
+  isCorrect      Boolean      @default(false)
+}
+
+model WritingCategory {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?
+  timer       Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  writings    Writing[]
+}
+
+model Writing {
+  id          Int               @id @default(autoincrement())
+  title       String
+  content     String
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  SoalWriting SoalWriting[]
+  categories  WritingCategory[]
+  pakets      Paket[]
+}
+
+model SoalWriting {
+  id            Int             @id @default(autoincrement())
+  writingId     Int
+  writing       Writing         @relation(fields: [writingId], references: [id])
+  jenis         JenisWriting
+  question      String
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  AnswerWriting AnswerWriting[]
+}
+
+model AnswerWriting {
+  id            Int         @id @default(autoincrement())
+  soalWritingId Int
+  soalWriting   SoalWriting @relation(fields: [soalWritingId], references: [id])
+  answer        String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model SpeakingCategory {
+  id          Int        @id @default(autoincrement())
+  name        String
+  description String?
+  timer       Int
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  speakings   Speaking[]
+}
+
+model Speaking {
+  id           Int                @id @default(autoincrement())
+  title        String
+  content      String
+  audioUrl     String?
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  SoalSpeaking SoalSpeaking[]
+  categories   SpeakingCategory[]
+  pakets       Paket[]
+}
+
+model SoalSpeaking {
+  id             Int              @id @default(autoincrement())
+  speakingId     Int
+  speaking       Speaking         @relation(fields: [speakingId], references: [id])
+  jenis          JenisSpeaking
+  question       String
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  AnswerSpeaking AnswerSpeaking[]
+}
+
+model AnswerSpeaking {
+  id             Int          @id @default(autoincrement())
+  soalSpeakingId Int
+  soalSpeaking   SoalSpeaking @relation(fields: [soalSpeakingId], references: [id], onDelete: Cascade)
+  answer         String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model Paket {
+  id          Int         @id @default(autoincrement())
+  name        String
+  description String?
+  readings    Reading[]
+  listenings  Listening[]
+  writings    Writing[]
+  speakings   Speaking[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+enum JenisSpeaking {
+  ESSAY
+  SHORT_ANSWER
+}
+
+enum JenisWriting {
+  ESSAY
+  SHORT_ANSWER
+}
