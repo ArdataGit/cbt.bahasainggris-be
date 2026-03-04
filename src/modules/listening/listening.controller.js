@@ -1,4 +1,10 @@
 import * as listeningService from './listening.services.js';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const getAllListening = async (req, res) => {
   try {
@@ -32,7 +38,7 @@ export const createListening = async (req, res) => {
 
     // If file is uploaded, use its path
     if (req.file) {
-      audioUrl = `/uploads/${req.file.filename}`;
+      audioUrl = `/uploads/audiomaster/${req.file.filename}`;
     }
 
     const newItem = await listeningService.createListening({ title, content, audioUrl });
@@ -49,7 +55,7 @@ export const updateListening = async (req, res) => {
 
     // If file is uploaded, update its path
     if (req.file) {
-      audioUrl = `/uploads/${req.file.filename}`;
+      audioUrl = `/uploads/audiomaster/${req.file.filename}`;
     }
 
     const updated = await listeningService.updateListening(req.params.id, { title, content, audioUrl });
@@ -61,8 +67,24 @@ export const updateListening = async (req, res) => {
 
 export const deleteListening = async (req, res) => {
   try {
-    await listeningService.deleteListening(req.params.id);
-    res.status(200).json({ success: true, message: 'Listening record deleted successfully' });
+    const id = req.params.id;
+    // Get the record first to get the audioUrl
+    const item = await listeningService.getListeningById(id);
+    
+    if (item && item.audioUrl) {
+      // Resolve absolute path to the file
+      // audioUrl is like "/uploads/audiomaster/filename.mp3"
+      // we need to map it to "backend/src/public/uploads/audiomaster/filename.mp3"
+      const filePath = path.join(__dirname, '../../public', item.audioUrl);
+      
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+        console.log(`Deleted audio file: ${filePath}`);
+      }
+    }
+
+    await listeningService.deleteListening(id);
+    res.status(200).json({ success: true, message: 'Listening record and associated audio file deleted successfully' });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

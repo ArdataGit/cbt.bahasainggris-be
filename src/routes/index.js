@@ -12,6 +12,8 @@ import speakingRoutes from '../modules/speaking/speaking.routes.js';
 import soalSpeakingRoutes from '../modules/soal-speaking/soal-speaking.routes.js';
 import speakingCategoryRoutes from '../modules/speaking-category/speaking-category.routes.js';
 import paketRoutes from '../modules/paket/paket.routes.js';
+import dataUserRoutes from '../modules/data-user/data-user.routes.js';
+import historyRoutes from '../modules/history/history.routes.js';
 const router = express.Router();
 
 router.use('/readings', readingRoutes);
@@ -27,5 +29,7 @@ router.use('/speakings', speakingRoutes);
 router.use('/soal-speakings', soalSpeakingRoutes);
 router.use('/speaking-categories', speakingCategoryRoutes);
 router.use('/pakets', paketRoutes);
+router.use('/data-users', dataUserRoutes);
+router.use('/history', historyRoutes);
 
 export default router;

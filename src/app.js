@@ -12,7 +12,7 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+app.use('/api/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 app.use('/api', routes);
 

@@ -16,7 +16,11 @@ export const getReadingById = async (id) => {
   return await prisma.reading.findUnique({
     where: { id: parseInt(id) },
     include: { 
-      SoalReading: true,
+      SoalReading: {
+        include: {
+          options: true
+        }
+      },
       categories: true
     },
   });

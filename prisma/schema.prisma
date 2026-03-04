@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -23,6 +17,19 @@ model User {
   updatedAt DateTime @updatedAt
 }
 
+model DataUser {
+  id                 Int                    @id @default(autoincrement())
+  name               String
+  email              String
+  phone              String?
+  createdAt          DateTime               @default(now())
+  updatedAt          DateTime               @updatedAt
+  listeningHistories UserListeningHistory[]
+  readingHistories   UserReadingHistory[]
+  speakingHistories  UserSpeakingHistory[]
+  writingHistories   UserWritingHistory[]
+}
+
 model ReadingCategory {
   id          Int       @id @default(autoincrement())
   name        String
@@ -30,36 +37,43 @@ model ReadingCategory {
   timer       Int
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  readings    Reading[]
+  pakets      Paket[]   @relation("PaketToReadingCategory")
+  readings    Reading[] @relation("ReadingToReadingCategory")
 }
 
 model Reading {
-  id          Int               @id @default(autoincrement())
-  title       String
-  content     String            @db.LongText
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
-  SoalReading SoalReading[]
-  categories  ReadingCategory[]
-  pakets      Paket[]
+  id               Int                  @id @default(autoincrement())
+  title            String
+  content          String               @db.LongText
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+  SoalReading      SoalReading[]
+  readingHistories UserReadingHistory[]
+  pakets           Paket[]              @relation("PaketToReading")
+  categories       ReadingCategory[]    @relation("ReadingToReadingCategory")
 }
 
 model SoalReading {
   id        Int             @id @default(autoincrement())
   readingId Int
-  reading   Reading         @relation(fields: [readingId], references: [id])
   question  String          @db.LongText
   createdAt DateTime        @default(now())
   updatedAt DateTime        @updatedAt
   options   ReadingOption[]
+  reading   Reading         @relation(fields: [readingId], references: [id])
+
+  @@index([readingId], map: "SoalReading_readingId_fkey")
 }
 
 model ReadingOption {
-  id            Int         @id @default(autoincrement())
+  id            Int                        @id @default(autoincrement())
   soalReadingId Int
-  soalReading   SoalReading @relation(fields: [soalReadingId], references: [id], onDelete: Cascade)
-  text          String      @db.Text
-  isCorrect     Boolean     @default(false)
+  text          String                     @db.Text
+  isCorrect     Boolean                    @default(false)
+  soalReading   SoalReading                @relation(fields: [soalReadingId], references: [id], onDelete: Cascade)
+  userHistories UserReadingOptionHistory[]
+
+  @@index([soalReadingId], map: "ReadingOption_soalReadingId_fkey")
 }
 
 model ListeningCategory {
@@ -69,37 +83,44 @@ model ListeningCategory {
   timer       Int
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
-  listenings  Listening[]
+  pakets      Paket[]     @relation("ListeningCategoryToPaket")
+  listenings  Listening[] @relation("ListeningToListeningCategory")
 }
 
 model Listening {
-  id           Int                 @id @default(autoincrement())
-  title        String
-  content      String              @db.LongText
-  audioUrl     String?
-  createdAt    DateTime            @default(now())
-  updatedAt    DateTime            @updatedAt
-  SoalListeing SoalListeing[]
-  categories   ListeningCategory[]
-  pakets       Paket[]
+  id                 Int                    @id @default(autoincrement())
+  title              String
+  content            String                 @db.LongText
+  audioUrl           String?
+  createdAt          DateTime               @default(now())
+  updatedAt          DateTime               @updatedAt
+  SoalListeing       SoalListeing[]
+  listeningHistories UserListeningHistory[]
+  categories         ListeningCategory[]    @relation("ListeningToListeningCategory")
+  pakets             Paket[]                @relation("ListeningToPaket")
 }
 
 model SoalListeing {
   id         Int               @id @default(autoincrement())
   listeingId Int
-  listeing   Listening         @relation(fields: [listeingId], references: [id])
   question   String            @db.LongText
   createdAt  DateTime          @default(now())
   updatedAt  DateTime          @updatedAt
   options    ListeningOption[]
+  listeing   Listening         @relation(fields: [listeingId], references: [id])
+
+  @@index([listeingId], map: "SoalListeing_listeingId_fkey")
 }
 
 model ListeningOption {
-  id             Int          @id @default(autoincrement())
-  soalListeingId Int
-  soalListeing   SoalListeing @relation(fields: [soalListeingId], references: [id], onDelete: Cascade)
-  text           String       @db.Text
-  isCorrect      Boolean      @default(false)
+  id              Int                          @id @default(autoincrement())
+  soalListeingId  Int
+  text            String                       @db.Text
+  isCorrect       Boolean                      @default(false)
+  soalListeing    SoalListeing                 @relation(fields: [soalListeingId], references: [id], onDelete: Cascade)
+  optionHistories UserListeningOptionHistory[]
+
+  @@index([soalListeingId], map: "ListeningOption_soalListeingId_fkey")
 }
 
 model WritingCategory {
@@ -109,38 +130,44 @@ model WritingCategory {
   timer       Int
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  writings    Writing[]
+  pakets      Paket[]   @relation("PaketToWritingCategory")
+  writings    Writing[] @relation("WritingToWritingCategory")
 }
 
 model Writing {
-  id          Int               @id @default(autoincrement())
-  title       String
-  content     String
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
-  SoalWriting SoalWriting[]
-  categories  WritingCategory[]
-  pakets      Paket[]
+  id               Int                  @id @default(autoincrement())
+  title            String
+  content          String
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+  SoalWriting      SoalWriting[]
+  writingHistories UserWritingHistory[]
+  pakets           Paket[]              @relation("PaketToWriting")
+  categories       WritingCategory[]    @relation("WritingToWritingCategory")
 }
 
 model SoalWriting {
   id            Int             @id @default(autoincrement())
   writingId     Int
-  writing       Writing         @relation(fields: [writingId], references: [id])
   jenis         JenisWriting
   question      String
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
   AnswerWriting AnswerWriting[]
+  writing       Writing         @relation(fields: [writingId], references: [id])
+
+  @@index([writingId], map: "SoalWriting_writingId_fkey")
 }
 
 model AnswerWriting {
   id            Int         @id @default(autoincrement())
   soalWritingId Int
-  soalWriting   SoalWriting @relation(fields: [soalWritingId], references: [id])
   answer        String
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
+  soalWriting   SoalWriting @relation(fields: [soalWritingId], references: [id])
+
+  @@index([soalWritingId], map: "AnswerWriting_soalWritingId_fkey")
 }
 
 model SpeakingCategory {
@@ -150,51 +177,172 @@ model SpeakingCategory {
   timer       Int
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
-  speakings   Speaking[]
+  pakets      Paket[]    @relation("PaketToSpeakingCategory")
+  speakings   Speaking[] @relation("SpeakingToSpeakingCategory")
 }
 
 model Speaking {
-  id           Int                @id @default(autoincrement())
-  title        String
-  content      String
-  audioUrl     String?
-  createdAt    DateTime           @default(now())
-  updatedAt    DateTime           @updatedAt
-  SoalSpeaking SoalSpeaking[]
-  categories   SpeakingCategory[]
-  pakets       Paket[]
+  id                Int                   @id @default(autoincrement())
+  title             String
+  content           String
+  audioUrl          String?
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
+  SoalSpeaking      SoalSpeaking[]
+  speakingHistories UserSpeakingHistory[]
+  pakets            Paket[]               @relation("PaketToSpeaking")
+  categories        SpeakingCategory[]    @relation("SpeakingToSpeakingCategory")
 }
 
 model SoalSpeaking {
   id             Int              @id @default(autoincrement())
   speakingId     Int
-  speaking       Speaking         @relation(fields: [speakingId], references: [id])
   jenis          JenisSpeaking
   question       String
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
   AnswerSpeaking AnswerSpeaking[]
+  speaking       Speaking         @relation(fields: [speakingId], references: [id])
+
+  @@index([speakingId], map: "SoalSpeaking_speakingId_fkey")
 }
 
 model AnswerSpeaking {
   id             Int          @id @default(autoincrement())
   soalSpeakingId Int
-  soalSpeaking   SoalSpeaking @relation(fields: [soalSpeakingId], references: [id], onDelete: Cascade)
   answer         String
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
+  soalSpeaking   SoalSpeaking @relation(fields: [soalSpeakingId], references: [id], onDelete: Cascade)
+
+  @@index([soalSpeakingId], map: "AnswerSpeaking_soalSpeakingId_fkey")
 }
 
 model Paket {
-  id          Int         @id @default(autoincrement())
-  name        String
-  description String?
-  readings    Reading[]
-  listenings  Listening[]
-  writings    Writing[]
-  speakings   Speaking[]
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id                  Int                 @id @default(autoincrement())
+  name                String
+  description         String?
+  createdAt           DateTime            @updatedAt
+  listeningCategories ListeningCategory[] @relation("ListeningCategoryToPaket")
+  listenings          Listening[]         @relation("ListeningToPaket")
+  readings            Reading[]           @relation("PaketToReading")
+  readingCategories   ReadingCategory[]   @relation("PaketToReadingCategory")
+  speakings           Speaking[]          @relation("PaketToSpeaking")
+  speakingCategories  SpeakingCategory[]  @relation("PaketToSpeakingCategory")
+  writings            Writing[]           @relation("PaketToWriting")
+  writingCategories   WritingCategory[]   @relation("PaketToWritingCategory")
+}
+
+model UserReadingHistory {
+  id              Int                        @id @default(autoincrement())
+  userDataId      Int
+  readingId       Int
+  score           Int
+  createdAt       DateTime                   @default(now())
+  updatedAt       DateTime                   @updatedAt
+  reading         Reading                    @relation(fields: [readingId], references: [id], onDelete: Cascade)
+  dataUser        DataUser                   @relation(fields: [userDataId], references: [id], onDelete: Cascade)
+  optionHistories UserReadingOptionHistory[]
+  soalHistories   UserSoalReadingHistory[]
+
+  @@index([readingId], map: "UserReadingHistory_readingId_fkey")
+  @@index([userDataId], map: "UserReadingHistory_userDataId_fkey")
+}
+
+model UserSoalReadingHistory {
+  id                   Int                @id @default(autoincrement())
+  userReadingHistoryId Int
+  answer               String
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  userReadingHistory   UserReadingHistory @relation(fields: [userReadingHistoryId], references: [id], onDelete: Cascade)
+
+  @@index([userReadingHistoryId], map: "UserSoalReadingHistory_userReadingHistoryId_fkey")
+}
+
+model UserReadingOptionHistory {
+  id                   Int                @id @default(autoincrement())
+  userReadingHistoryId Int
+  readingOptionId      Int
+  answer               String
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  readingOption        ReadingOption      @relation(fields: [readingOptionId], references: [id], onDelete: Cascade)
+  userReadingHistory   UserReadingHistory @relation(fields: [userReadingHistoryId], references: [id], onDelete: Cascade)
+
+  @@index([readingOptionId], map: "UserReadingOptionHistory_readingOptionId_fkey")
+  @@index([userReadingHistoryId], map: "UserReadingOptionHistory_userReadingHistoryId_fkey")
+}
+
+model UserListeningHistory {
+  id              Int                          @id @default(autoincrement())
+  userDataId      Int
+  listeningId     Int
+  score           Int
+  createdAt       DateTime                     @default(now())
+  updatedAt       DateTime                     @updatedAt
+  listening       Listening                    @relation(fields: [listeningId], references: [id], onDelete: Cascade)
+  dataUser        DataUser                     @relation(fields: [userDataId], references: [id], onDelete: Cascade)
+  optionHistories UserListeningOptionHistory[]
+  soalHistories   UserSoalListeningHistory[]
+
+  @@index([listeningId], map: "UserListeningHistory_listeningId_fkey")
+  @@index([userDataId], map: "UserListeningHistory_userDataId_fkey")
+}
+
+model UserSoalListeningHistory {
+  id                     Int                  @id @default(autoincrement())
+  userListeningHistoryId Int
+  answer                 String
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  userListeningHistory   UserListeningHistory @relation(fields: [userListeningHistoryId], references: [id], onDelete: Cascade)
+
+  @@index([userListeningHistoryId], map: "UserSoalListeningHistory_userListeningHistoryId_fkey")
+}
+
+model UserListeningOptionHistory {
+  id                     Int                  @id @default(autoincrement())
+  userListeningHistoryId Int
+  listeningOptionId      Int
+  answer                 String
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  listeningOption        ListeningOption      @relation(fields: [listeningOptionId], references: [id], onDelete: Cascade)
+  userListeningHistory   UserListeningHistory @relation(fields: [userListeningHistoryId], references: [id], onDelete: Cascade)
+
+  @@index([listeningOptionId], map: "UserListeningOptionHistory_listeningOptionId_fkey")
+  @@index([userListeningHistoryId], map: "UserListeningOptionHistory_userListeningHistoryId_fkey")
+}
+
+model UserWritingHistory {
+  id         Int      @id @default(autoincrement())
+  userDataId Int
+  writingId  Int
+  answer     String
+  score      Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  dataUser   DataUser @relation(fields: [userDataId], references: [id], onDelete: Cascade)
+  writing    Writing  @relation(fields: [writingId], references: [id], onDelete: Cascade)
+
+  @@index([userDataId], map: "UserWritingHistory_userDataId_fkey")
+  @@index([writingId], map: "UserWritingHistory_writingId_fkey")
+}
+
+model UserSpeakingHistory {
+  id         Int      @id @default(autoincrement())
+  userDataId Int
+  speakingId Int
+  answer     String
+  score      Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  speaking   Speaking @relation(fields: [speakingId], references: [id], onDelete: Cascade)
+  dataUser   DataUser @relation(fields: [userDataId], references: [id], onDelete: Cascade)
+
+  @@index([speakingId], map: "UserSpeakingHistory_speakingId_fkey")
+  @@index([userDataId], map: "UserSpeakingHistory_userDataId_fkey")
 }
 
 enum JenisSpeaking {

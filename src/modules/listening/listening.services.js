@@ -18,7 +18,11 @@ export const getListeningById = async (id) => {
   return await prisma.listening.findUnique({
     where: { id: parseInt(id) },
     include: { 
-      SoalListeing: true,
+      SoalListeing: {
+        include: {
+          options: true
+        }
+      },
       categories: true
     },
   });

@@ -23,7 +23,14 @@ export const getPaketById = async (req, res) => {
 
 export const createPaket = async (req, res) => {
     try {
-        const { name, description, readingIds, listeningIds, writingIds, speakingIds } = req.body;
+        const { 
+            name, 
+            description, 
+            readingCategoryIds, 
+            listeningCategoryIds, 
+            writingCategoryIds, 
+            speakingCategoryIds 
+        } = req.body;
         
         // Helper to safely parse JSON arrays if they come as strings
         const parseArray = (field) => {
@@ -37,18 +44,18 @@ export const createPaket = async (req, res) => {
             return field;
         };
 
-        const parsedReadingIds = parseArray(readingIds);
-        const parsedListeningIds = parseArray(listeningIds);
-        const parsedWritingIds = parseArray(writingIds);
-        const parsedSpeakingIds = parseArray(speakingIds);
+        const parsedReadingCategoryIds = parseArray(readingCategoryIds);
+        const parsedListeningCategoryIds = parseArray(listeningCategoryIds);
+        const parsedWritingCategoryIds = parseArray(writingCategoryIds);
+        const parsedSpeakingCategoryIds = parseArray(speakingCategoryIds);
         
         const paket = await paketService.createPaket({ 
             name, 
             description, 
-            readingIds: parsedReadingIds,
-            listeningIds: parsedListeningIds,
-            writingIds: parsedWritingIds,
-            speakingIds: parsedSpeakingIds
+            readingCategoryIds: parsedReadingCategoryIds,
+            listeningCategoryIds: parsedListeningCategoryIds,
+            writingCategoryIds: parsedWritingCategoryIds,
+            speakingCategoryIds: parsedSpeakingCategoryIds
         });
         
         res.status(201).json({ success: true, data: paket });
@@ -59,7 +66,14 @@ export const createPaket = async (req, res) => {
 
 export const updatePaket = async (req, res) => {
     try {
-        const { name, description, readingIds, listeningIds, writingIds, speakingIds } = req.body;
+        const { 
+            name, 
+            description, 
+            readingCategoryIds, 
+            listeningCategoryIds, 
+            writingCategoryIds, 
+            speakingCategoryIds 
+        } = req.body;
         
          // Helper to safely parse JSON arrays if they come as strings
         const parseArray = (field) => {
@@ -73,18 +87,18 @@ export const updatePaket = async (req, res) => {
             return field;
         };
 
-        const parsedReadingIds = parseArray(readingIds);
-        const parsedListeningIds = parseArray(listeningIds);
-        const parsedWritingIds = parseArray(writingIds);
-        const parsedSpeakingIds = parseArray(speakingIds);
+        const parsedReadingCategoryIds = parseArray(readingCategoryIds);
+        const parsedListeningCategoryIds = parseArray(listeningCategoryIds);
+        const parsedWritingCategoryIds = parseArray(writingCategoryIds);
+        const parsedSpeakingCategoryIds = parseArray(speakingCategoryIds);
         
         const paket = await paketService.updatePaket(req.params.id, { 
             name, 
             description, 
-            readingIds: parsedReadingIds,
-            listeningIds: parsedListeningIds,
-            writingIds: parsedWritingIds,
-            speakingIds: parsedSpeakingIds
+            readingCategoryIds: parsedReadingCategoryIds,
+            listeningCategoryIds: parsedListeningCategoryIds,
+            writingCategoryIds: parsedWritingCategoryIds,
+            speakingCategoryIds: parsedSpeakingCategoryIds
         });
         
         res.status(200).json({ success: true, data: paket });

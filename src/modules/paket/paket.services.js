@@ -6,10 +6,10 @@ export const getAllPakets = async () => {
         include: {
             _count: {
                 select: {
-                    readings: true,
-                    listenings: true,
-                    writings: true,
-                    speakings: true
+                    readingCategories: true,
+                    listeningCategories: true,
+                    writingCategories: true,
+                    speakingCategories: true
                 }
             }
         },
@@ -23,93 +23,97 @@ export const getPaketById = async (id) => {
     return await prisma.paket.findUnique({
         where: { id: parseInt(id) },
         include: {
-            readings: { select: { id: true, title: true } },
-            listenings: { select: { id: true, title: true } },
-            writings: { select: { id: true, title: true } },
-            speakings: { select: { id: true, title: true } }
+            readingCategories: { include: { readings: { select: { id: true, title: true } } } },
+            listeningCategories: { include: { listenings: { select: { id: true, title: true } } } },
+            writingCategories: { include: { writings: { select: { id: true, title: true } } } },
+            speakingCategories: { include: { speakings: { select: { id: true, title: true } } } }
         }
     });
 };
 
 export const createPaket = async (data) => {
-    const { name, description, readingIds, listeningIds, writingIds, speakingIds } = data;
+    const { 
+        name, 
+        description, 
+        readingCategoryIds, 
+        listeningCategoryIds, 
+        writingCategoryIds, 
+        speakingCategoryIds 
+    } = data;
 
-    // Helper to safely format relational ids
     const formatRelationalIds = (ids) => {
          if (!ids) return [];
-         let parsedIds = [];
-         try {
-             parsedIds = typeof ids === 'string' ? JSON.parse(ids) : ids;
-             if (!Array.isArray(parsedIds)) parsedIds = [parsedIds];
-         } catch (e) {
-             console.error("Error parsing ids:", e);
+         let parsedIds = ids;
+         if (typeof ids === 'string') {
+             try { parsedIds = JSON.parse(ids); } catch (e) { console.error("Error parsing ids:", e); }
          }
+         if (!Array.isArray(parsedIds)) parsedIds = parsedIds ? [parsedIds] : [];
          return parsedIds.map(id => ({ id: parseInt(id) }));
     };
-
-    const connectReadings = formatRelationalIds(readingIds);
-    const connectListenings = formatRelationalIds(listeningIds);
-    const connectWritings = formatRelationalIds(writingIds);
-    const connectSpeakings = formatRelationalIds(speakingIds);
 
     return await prisma.paket.create({
         data: {
             name,
             description,
-            readings: connectReadings.length > 0 ? { connect: connectReadings } : undefined,
-            listenings: connectListenings.length > 0 ? { connect: connectListenings } : undefined,
-            writings: connectWritings.length > 0 ? { connect: connectWritings } : undefined,
-            speakings: connectSpeakings.length > 0 ? { connect: connectSpeakings } : undefined,
+            readingCategories: { connect: formatRelationalIds(readingCategoryIds) },
+            listeningCategories: { connect: formatRelationalIds(listeningCategoryIds) },
+            writingCategories: { connect: formatRelationalIds(writingCategoryIds) },
+            speakingCategories: { connect: formatRelationalIds(speakingCategoryIds) },
         },
         include: {
-            readings: true,
-            listenings: true,
-            writings: true,
-            speakings: true
+            readingCategories: true,
+            listeningCategories: true,
+            writingCategories: true,
+            speakingCategories: true
         }
     });
 };
 
 export const updatePaket = async (id, data) => {
-    const { name, description, readingIds, listeningIds, writingIds, speakingIds } = data;
+    const { 
+        name, 
+        description, 
+        readingCategoryIds, 
+        listeningCategoryIds, 
+        writingCategoryIds, 
+        speakingCategoryIds 
+    } = data;
     
     const updateData = {};
     if (name !== undefined) updateData.name = name;
     if (description !== undefined) updateData.description = description;
 
-     // Helper to safely format relational ids for 'set'
     const formatRelationalIds = (ids) => {
-         let parsedIds = [];
-         try {
-             parsedIds = typeof ids === 'string' ? JSON.parse(ids) : ids;
-             if (!Array.isArray(parsedIds)) parsedIds = [parsedIds];
-         } catch (e) {
-             console.error("Error parsing ids:", e);
+         if (!ids) return [];
+         let parsedIds = ids;
+         if (typeof ids === 'string') {
+             try { parsedIds = JSON.parse(ids); } catch (e) { console.error("Error parsing ids:", e); }
          }
+         if (!Array.isArray(parsedIds)) parsedIds = parsedIds ? [parsedIds] : [];
          return parsedIds.map(parsedId => ({ id: parseInt(parsedId) }));
     };
 
-    if (readingIds !== undefined) {
-         updateData.readings = { set: formatRelationalIds(readingIds) };
+    if (readingCategoryIds !== undefined) {
+         updateData.readingCategories = { set: formatRelationalIds(readingCategoryIds) };
     }
-    if (listeningIds !== undefined) {
-         updateData.listenings = { set: formatRelationalIds(listeningIds) };
+    if (listeningCategoryIds !== undefined) {
+         updateData.listeningCategories = { set: formatRelationalIds(listeningCategoryIds) };
     }
-    if (writingIds !== undefined) {
-         updateData.writings = { set: formatRelationalIds(writingIds) };
+    if (writingCategoryIds !== undefined) {
+         updateData.writingCategories = { set: formatRelationalIds(writingCategoryIds) };
     }
-    if (speakingIds !== undefined) {
-         updateData.speakings = { set: formatRelationalIds(speakingIds) };
+    if (speakingCategoryIds !== undefined) {
+         updateData.speakingCategories = { set: formatRelationalIds(speakingCategoryIds) };
     }
 
     return await prisma.paket.update({
         where: { id: parseInt(id) },
         data: updateData,
         include: {
-            readings: true,
-            listenings: true,
-            writings: true,
-            speakings: true
+            readingCategories: true,
+            listeningCategories: true,
+            writingCategories: true,
+            speakingCategories: true
         }
     });
 };

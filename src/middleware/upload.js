@@ -1,20 +1,27 @@
 import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Define storage for the uploaded files
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, '../public/uploads'));
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
+// Helper function to create storage with dynamic destination
+const createStorage = (subfolder = '') => {
+  return multer.diskStorage({
+    destination: function (req, file, cb) {
+      const dest = path.join(__dirname, '../public/uploads', subfolder);
+      if (!fs.existsSync(dest)) {
+        fs.mkdirSync(dest, { recursive: true });
+      }
+      cb(null, dest);
+    },
+    filename: function (req, file, cb) {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+    }
+  });
+};
 
 // File filter (only allow audio files)
 const fileFilter = (req, file, cb) => {
@@ -25,12 +32,24 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
+const limits = {
+  fileSize: 10 * 1024 * 1024 // 10MB limit
+};
+
+// Default upload middleware
 const upload = multer({ 
-  storage: storage,
+  storage: createStorage(),
   fileFilter: fileFilter,
-  limits: {
-    fileSize: 10 * 1024 * 1024 // 10MB limit
-  }
+  limits: limits
 });
+
+// Function to get middleware for specific subfolder
+export const uploadTo = (subfolder) => {
+  return multer({
+    storage: createStorage(subfolder),
+    fileFilter: fileFilter,
+    limits: limits
+  });
+};
 
 export default upload;

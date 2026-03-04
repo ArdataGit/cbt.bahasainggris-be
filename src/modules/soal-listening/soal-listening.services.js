@@ -16,10 +16,10 @@ export const getSoalById = async (id) => {
 };
 
 export const createSoal = async (data) => {
-  const { listeingId, question, options } = data;
+  const { listeningId, question, options } = data;
   return await prisma.soalListeing.create({
     data: {
-      listeingId: parseInt(listeingId),
+      listeingId: parseInt(listeningId),
       question,
       options: {
         create: options.map(opt => ({
@@ -33,13 +33,13 @@ export const createSoal = async (data) => {
 };
 
 export const updateSoal = async (id, data) => {
-  const { listeingId, question, options } = data;
+  const { listeningId, question, options } = data;
 
   // Update the question and listeingId
   const updatedSoal = await prisma.soalListeing.update({
     where: { id: parseInt(id) },
     data: {
-      listeingId: listeingId ? parseInt(listeingId) : undefined,
+      listeingId: listeningId ? parseInt(listeningId) : undefined,
       question,
     }
   });
