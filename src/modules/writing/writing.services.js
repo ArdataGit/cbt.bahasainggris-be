@@ -41,6 +41,8 @@ export const createWriting = async (data) => {
     data: {
       title: writingData.title,
       content: writingData.content,
+      jenis: writingData.jenis,
+      targetWords: writingData.targetWords ? parseInt(writingData.targetWords) : undefined,
       categories: parsedCategoryIds.length > 0 ? {
         connect: parsedCategoryIds.map(id => ({ id }))
       } : undefined
@@ -62,6 +64,8 @@ export const updateWriting = async (id, data) => {
     data: {
       title: writingData.title,
       content: writingData.content,
+      jenis: writingData.jenis,
+      targetWords: writingData.targetWords ? parseInt(writingData.targetWords) : undefined,
       categories: parsedCategoryIds !== undefined ? {
         set: parsedCategoryIds.map(id => ({ id }))
       } : undefined

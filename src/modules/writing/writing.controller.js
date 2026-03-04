@@ -23,11 +23,11 @@ export const getWritingById = async (req, res) => {
 
 export const createWriting = async (req, res) => {
   try {
-    const { title, content, categoryIds } = req.body;
+    const { title, content, jenis, targetWords, categoryIds } = req.body;
     if (!title || !content) {
       return res.status(400).json({ success: false, message: 'Title and content are required' });
     }
-    const newItem = await writingService.createWriting({ title, content, categoryIds });
+    const newItem = await writingService.createWriting({ title, content, jenis, targetWords, categoryIds });
     res.status(201).json({ success: true, data: newItem });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -36,8 +36,8 @@ export const createWriting = async (req, res) => {
 
 export const updateWriting = async (req, res) => {
   try {
-    const { title, content, categoryIds } = req.body;
-    const updated = await writingService.updateWriting(req.params.id, { title, content, categoryIds });
+    const { title, content, jenis, targetWords, categoryIds } = req.body;
+    const updated = await writingService.updateWriting(req.params.id, { title, content, jenis, targetWords, categoryIds });
     res.status(200).json({ success: true, data: updated });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

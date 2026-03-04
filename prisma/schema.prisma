@@ -138,6 +138,8 @@ model Writing {
   id               Int                  @id @default(autoincrement())
   title            String
   content          String
+  jenis         JenisWriting @default(ESSAY)
+  targetWords      Int @default(150)
   createdAt        DateTime             @default(now())
   updatedAt        DateTime             @updatedAt
   SoalWriting      SoalWriting[]
@@ -153,8 +155,9 @@ model SoalWriting {
   question      String
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
-  AnswerWriting AnswerWriting[]
-  writing       Writing         @relation(fields: [writingId], references: [id])
+  AnswerWriting              AnswerWriting[]
+  writing                    Writing                  @relation(fields: [writingId], references: [id])
+  userSoalWritingHistories UserSoalWritingHistory[]
 
   @@index([writingId], map: "SoalWriting_writingId_fkey")
 }
@@ -316,18 +319,33 @@ model UserListeningOptionHistory {
 }
 
 model UserWritingHistory {
-  id         Int      @id @default(autoincrement())
-  userDataId Int
-  writingId  Int
-  answer     String
-  score      Int
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  dataUser   DataUser @relation(fields: [userDataId], references: [id], onDelete: Cascade)
-  writing    Writing  @relation(fields: [writingId], references: [id], onDelete: Cascade)
+  id            Int                      @id @default(autoincrement())
+  userDataId    Int
+  writingId     Int
+  answer        String                   @db.Text
+  score         Int
+  createdAt     DateTime                 @default(now())
+  updatedAt     DateTime                 @updatedAt
+  dataUser      DataUser                 @relation(fields: [userDataId], references: [id], onDelete: Cascade)
+  writing       Writing                  @relation(fields: [writingId], references: [id], onDelete: Cascade)
+  soalHistories UserSoalWritingHistory[]
 
   @@index([userDataId], map: "UserWritingHistory_userDataId_fkey")
   @@index([writingId], map: "UserWritingHistory_writingId_fkey")
+}
+
+model UserSoalWritingHistory {
+  id                   Int                @id @default(autoincrement())
+  userWritingHistoryId Int
+  soalWritingId        Int
+  answer               String             @db.Text
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  userWritingHistory   UserWritingHistory @relation(fields: [userWritingHistoryId], references: [id], onDelete: Cascade)
+  soalWriting          SoalWriting        @relation(fields: [soalWritingId], references: [id], onDelete: Cascade)
+
+  @@index([userWritingHistoryId], map: "UserSoalWritingHistory_userWritingHistoryId_fkey")
+  @@index([soalWritingId], map: "UserSoalWritingHistory_soalWritingId_fkey")
 }
 
 model UserSpeakingHistory {

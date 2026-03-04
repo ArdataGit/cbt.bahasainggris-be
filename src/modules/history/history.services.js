@@ -59,6 +59,31 @@ export const saveListeningHistory = async (data) => {
     return Promise.all(historyPromises);
 };
 
+export const saveWritingHistory = async (data) => {
+    const { userDataId, results } = data;
+  
+    const historyPromises = results.map(async (writingResult) => {
+      const { writingId, score, answer, answers } = writingResult;
+  
+      return prisma.userWritingHistory.create({
+        data: {
+          userDataId,
+          writingId,
+          score,
+          answer: answer || "",
+          soalHistories: answers && answers.length > 0 ? {
+            create: answers.map((ans) => ({
+              soalWritingId: ans.soalWritingId,
+              answer: ans.answer,
+            })),
+          } : undefined,
+        },
+      });
+    });
+  
+    return Promise.all(historyPromises);
+};
+
 export const getUserHistory = async (userDataId) => {
     return await prisma.dataUser.findUnique({
       where: { id: parseInt(userDataId) },

@@ -32,6 +32,22 @@ export const saveListeningHistory = async (req, res) => {
     }
 };
 
+export const saveWritingHistory = async (req, res) => {
+    try {
+      const result = await historyServices.saveWritingHistory(req.body);
+      res.status(201).json({
+        success: true,
+        message: 'Writing history saved successfully',
+        data: result,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+};
+
 export const getUserHistory = async (req, res) => {
     try {
       const { userDataId } = req.query;
