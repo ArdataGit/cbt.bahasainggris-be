@@ -84,6 +84,25 @@ export const saveWritingHistory = async (data) => {
     return Promise.all(historyPromises);
 };
 
+export const saveSpeakingHistory = async (data) => {
+    const { userDataId, results } = data;
+  
+    const historyPromises = results.map(async (speakingResult) => {
+      const { speakingId, score, answer } = speakingResult;
+  
+      return prisma.userSpeakingHistory.create({
+        data: {
+          userDataId,
+          speakingId,
+          score,
+          answer: answer || "",
+        },
+      });
+    });
+  
+    return Promise.all(historyPromises);
+};
+
 export const getUserHistory = async (userDataId) => {
     return await prisma.dataUser.findUnique({
       where: { id: parseInt(userDataId) },
@@ -92,7 +111,11 @@ export const getUserHistory = async (userDataId) => {
           include: {
             reading: {
                 include: {
-                    SoalReading: true
+                    SoalReading: {
+                        include: {
+                            options: true
+                        }
+                    }
                 }
             },
             soalHistories: true,
@@ -102,7 +125,11 @@ export const getUserHistory = async (userDataId) => {
           include: {
             listening: {
                 include: {
-                    SoalListeing: true
+                    SoalListeing: {
+                        include: {
+                            options: true
+                        }
+                    }
                 }
             },
             soalHistories: true,
@@ -113,9 +140,14 @@ export const getUserHistory = async (userDataId) => {
           include: {
             writing: {
                 include: {
-                    SoalWriting: true
+                    SoalWriting: {
+                        include: {
+                            AnswerWriting: true
+                        }
+                    }
                 }
             },
+            soalHistories: true,
           }
         },
         speakingHistories: {
@@ -127,6 +159,37 @@ export const getUserHistory = async (userDataId) => {
             },
           }
         },
+      }
+    });
+};
+
+export const getAllHistory = async () => {
+    return await prisma.dataUser.findMany({
+      include: {
+        paket: true,
+        readingHistories: {
+          include: {
+            reading: true,
+          }
+        },
+        listeningHistories: {
+          include: {
+            listening: true,
+          }
+        },
+        writingHistories: {
+          include: {
+            writing: true,
+          }
+        },
+        speakingHistories: {
+          include: {
+            speaking: true,
+          }
+        },
+      },
+      orderBy: {
+        createdAt: 'desc'
       }
     });
 };

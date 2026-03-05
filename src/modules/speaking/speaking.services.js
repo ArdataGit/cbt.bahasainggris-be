@@ -30,7 +30,7 @@ export const getSpeakingById = async (id) => {
 };
 
 export const createSpeaking = async (data) => {
-    const { title, content, audioUrl, categoryIds } = data;
+    const { title, content, jenis, audioUrl, categoryIds } = data;
     
     // Process category relationships if provided
     let connectCategories = [];
@@ -50,6 +50,7 @@ export const createSpeaking = async (data) => {
         data: {
             title,
             content,
+            jenis,
             audioUrl: audioUrl || null,
             categories: connectCategories.length > 0 ? {
                 connect: connectCategories
@@ -62,12 +63,13 @@ export const createSpeaking = async (data) => {
 };
 
 export const updateSpeaking = async (id, data) => {
-    const { title, content, audioUrl, categoryIds } = data;
+    const { title, content, jenis, audioUrl, categoryIds } = data;
     
     // Prepare update data payload
     const updateData = {};
     if (title !== undefined) updateData.title = title;
     if (content !== undefined) updateData.content = content;
+    if (jenis !== undefined) updateData.jenis = jenis;
     if (audioUrl !== undefined) updateData.audioUrl = audioUrl;
 
     // Process category relationships if provided

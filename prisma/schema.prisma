@@ -22,12 +22,16 @@ model DataUser {
   name               String
   email              String
   phone              String?
+  paketId            Int?
   createdAt          DateTime               @default(now())
   updatedAt          DateTime               @updatedAt
   listeningHistories UserListeningHistory[]
   readingHistories   UserReadingHistory[]
   speakingHistories  UserSpeakingHistory[]
   writingHistories   UserWritingHistory[]
+  paket              Paket?                 @relation(fields: [paketId], references: [id])
+
+  @@index([paketId], map: "DataUser_paketId_fkey")
 }
 
 model ReadingCategory {
@@ -107,7 +111,7 @@ model SoalListeing {
   createdAt  DateTime          @default(now())
   updatedAt  DateTime          @updatedAt
   options    ListeningOption[]
-  listeing   Listening         @relation(fields: [listeingId], references: [id])
+  listeing   Listening         @relation(fields: [listeingId], references: [id], onDelete: Cascade)
 
   @@index([listeingId], map: "SoalListeing_listeingId_fkey")
 }
@@ -188,6 +192,7 @@ model Speaking {
   id                Int                   @id @default(autoincrement())
   title             String
   content           String
+  jenis             JenisSpeaking
   audioUrl          String?
   createdAt         DateTime              @default(now())
   updatedAt         DateTime              @updatedAt
@@ -234,6 +239,7 @@ model Paket {
   speakingCategories  SpeakingCategory[]  @relation("PaketToSpeakingCategory")
   writings            Writing[]           @relation("PaketToWriting")
   writingCategories   WritingCategory[]   @relation("PaketToWritingCategory")
+  dataUsers           DataUser[]
 }
 
 model UserReadingHistory {
@@ -364,8 +370,8 @@ model UserSpeakingHistory {
 }
 
 enum JenisSpeaking {
-  ESSAY
-  SHORT_ANSWER
+  MENIRU
+  MENJAWAB
 }
 
 enum JenisWriting {

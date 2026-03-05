@@ -23,8 +23,8 @@ export const getSpeakingById = async (req, res) => {
 
 export const createSpeaking = async (req, res) => {
     try {
-        const { title, content, categoryIds } = req.body;
-        const audioUrl = req.file ? `/uploads/${req.file.filename}` : null;
+        const { title, content, jenis, categoryIds } = req.body;
+        const audioUrl = req.file ? `/uploads/speakingmaster/${req.file.filename}` : null;
         
         let parsedCategoryIds = categoryIds;
         if (categoryIds && typeof categoryIds === 'string') {
@@ -38,6 +38,7 @@ export const createSpeaking = async (req, res) => {
         const speaking = await speakingService.createSpeaking({ 
             title, 
             content, 
+            jenis,
             audioUrl,
             categoryIds: parsedCategoryIds 
         });
@@ -50,14 +51,15 @@ export const createSpeaking = async (req, res) => {
 
 export const updateSpeaking = async (req, res) => {
     try {
-        const { title, content, categoryIds } = req.body;
+        const { title, content, jenis, categoryIds } = req.body;
         
         const updateData = {};
         if (title !== undefined) updateData.title = title;
         if (content !== undefined) updateData.content = content;
+        if (jenis !== undefined) updateData.jenis = jenis;
         
         if (req.file) {
-            updateData.audioUrl = `/uploads/${req.file.filename}`;
+            updateData.audioUrl = `/uploads/speakingmaster/${req.file.filename}`;
         }
         
         if (categoryIds !== undefined) {

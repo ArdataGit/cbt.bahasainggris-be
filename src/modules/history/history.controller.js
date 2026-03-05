@@ -48,6 +48,41 @@ export const saveWritingHistory = async (req, res) => {
     }
 };
 
+export const saveSpeakingHistory = async (req, res) => {
+    try {
+        const { userDataId, speakingIds } = req.body;
+        const files = req.files || [];
+        
+        // Form Data appends speakingIds multiple times or once, ensure it's an array
+        const ids = Array.isArray(speakingIds) ? speakingIds : [speakingIds].filter(Boolean);
+        
+        const results = ids.map((speakingId, index) => {
+            const file = files[index];
+            return {
+                speakingId: parseInt(speakingId),
+                score: 0,
+                answer: file ? `/uploads/userspeaking/${file.filename}` : ''
+            };
+        });
+        
+        const result = await historyServices.saveSpeakingHistory({ 
+            userDataId: parseInt(userDataId), 
+            results 
+        });
+        
+        res.status(201).json({
+            success: true,
+            message: 'Speaking history saved successfully',
+            data: result,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
 export const getUserHistory = async (req, res) => {
     try {
       const { userDataId } = req.query;
@@ -58,6 +93,21 @@ export const getUserHistory = async (req, res) => {
         });
       }
       const result = await historyServices.getUserHistory(userDataId);
+      res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+};
+
+export const getAllHistory = async (req, res) => {
+    try {
+      const result = await historyServices.getAllHistory();
       res.status(200).json({
         success: true,
         data: result,
