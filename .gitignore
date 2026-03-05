@@ -27,11 +27,7 @@ dist/
 build/
 out/
 
-# ========================
-# Prisma
-# ========================
-prisma/migrations/*
-!prisma/migrations/.keep
+
 
 # ========================
 # MacOS
