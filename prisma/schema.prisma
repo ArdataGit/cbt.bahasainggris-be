@@ -64,7 +64,7 @@ model SoalReading {
   createdAt DateTime        @default(now())
   updatedAt DateTime        @updatedAt
   options   ReadingOption[]
-  reading   Reading         @relation(fields: [readingId], references: [id])
+  reading   Reading         @relation(fields: [readingId], references: [id], onDelete: Cascade)
 
   @@index([readingId], map: "SoalReading_readingId_fkey")
 }
@@ -160,7 +160,7 @@ model SoalWriting {
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
   AnswerWriting              AnswerWriting[]
-  writing                    Writing                  @relation(fields: [writingId], references: [id])
+  writing                    Writing                  @relation(fields: [writingId], references: [id], onDelete: Cascade)
   userSoalWritingHistories UserSoalWritingHistory[]
 
   @@index([writingId], map: "SoalWriting_writingId_fkey")
@@ -172,7 +172,7 @@ model AnswerWriting {
   answer        String
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
-  soalWriting   SoalWriting @relation(fields: [soalWritingId], references: [id])
+  soalWriting   SoalWriting @relation(fields: [soalWritingId], references: [id], onDelete: Cascade)
 
   @@index([soalWritingId], map: "AnswerWriting_soalWritingId_fkey")
 }
@@ -210,7 +210,7 @@ model SoalSpeaking {
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
   AnswerSpeaking AnswerSpeaking[]
-  speaking       Speaking         @relation(fields: [speakingId], references: [id])
+  speaking       Speaking         @relation(fields: [speakingId], references: [id], onDelete: Cascade)
 
   @@index([speakingId], map: "SoalSpeaking_speakingId_fkey")
 }

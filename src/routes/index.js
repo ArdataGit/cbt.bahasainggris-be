@@ -14,7 +14,28 @@ import speakingCategoryRoutes from '../modules/speaking-category/speaking-catego
 import paketRoutes from '../modules/paket/paket.routes.js';
 import dataUserRoutes from '../modules/data-user/data-user.routes.js';
 import historyRoutes from '../modules/history/history.routes.js';
+import upload from '../utils/upload.js';
+
 const router = express.Router();
+
+router.post('/upload', upload.single('image'), (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No file uploaded' });
+    }
+    
+    const fileUrl = `${process.env.BACKEND_URL || 'http://localhost:3001'}/api/uploads/readings/${req.file.filename}`;
+    
+    res.json({
+      success: true,
+      data: {
+        url: fileUrl
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
 
 router.use('/readings', readingRoutes);
 router.use('/soal-readings', soalReadingRoutes);
