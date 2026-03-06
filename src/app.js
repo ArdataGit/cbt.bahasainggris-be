@@ -11,6 +11,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/public', express.static('src/public'));
+app.use('/uploads', express.static('src/public/uploads'));
 
 app.use('/api', routes);
 app.use('/api/auth', authRoutes);
