@@ -18,7 +18,7 @@ export const saveReadingHistory = async (data) => {
           })),
         },
         optionHistories: {
-          create: answers.map((ans) => ({
+          create: answers.filter(ans => ans.readingOptionId).map((ans) => ({
             readingOptionId: ans.readingOptionId,
             answer: ans.answer,
           })),
@@ -47,7 +47,7 @@ export const saveListeningHistory = async (data) => {
             })),
           },
           optionHistories: {
-            create: answers.map((ans) => ({
+            create: answers.filter(ans => ans.listeningOptionId).map((ans) => ({
               listeningOptionId: ans.listeningOptionId,
               answer: ans.answer,
             })),
