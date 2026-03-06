@@ -119,3 +119,39 @@ export const getAllHistory = async (req, res) => {
       });
     }
 };
+
+export const updateWritingScore = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { score } = req.body;
+        const result = await historyServices.updateWritingScore(id, score);
+        res.status(200).json({
+            success: true,
+            message: 'Writing score updated successfully',
+            data: result,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+export const updateSpeakingScore = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { score } = req.body;
+        const result = await historyServices.updateSpeakingScore(id, score);
+        res.status(200).json({
+            success: true,
+            message: 'Speaking score updated successfully',
+            data: result,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};

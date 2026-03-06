@@ -12,5 +12,7 @@ router.post('/listening', historyController.saveListeningHistory);
 router.post('/writing', historyController.saveWritingHistory);
 router.get('/user', historyController.getUserHistory);
 router.get('/', historyController.getAllHistory);
+router.patch('/writing/:id/score', historyController.updateWritingScore);
+router.patch('/speaking/:id/score', historyController.updateSpeakingScore);
 
 export default router;

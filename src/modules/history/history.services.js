@@ -193,3 +193,17 @@ export const getAllHistory = async () => {
       }
     });
 };
+
+export const updateWritingScore = async (id, score) => {
+    return await prisma.userWritingHistory.update({
+        where: { id: parseInt(id) },
+        data: { score: parseInt(score) }
+    });
+};
+
+export const updateSpeakingScore = async (id, score) => {
+    return await prisma.userSpeakingHistory.update({
+        where: { id: parseInt(id) },
+        data: { score: parseInt(score) }
+    });
+};
