@@ -27,7 +27,17 @@ export const createWriting = async (req, res) => {
     if (!title || !content) {
       return res.status(400).json({ success: false, message: 'Title and content are required' });
     }
-    const newItem = await writingService.createWriting({ title, content, jenis, targetWords, categoryIds });
+
+    let parsedCategoryIds = categoryIds;
+    if (categoryIds && typeof categoryIds === 'string') {
+        try {
+            parsedCategoryIds = JSON.parse(categoryIds);
+        } catch (e) {
+            console.error("Error parsing categoryIds:", e);
+        }
+    }
+
+    const newItem = await writingService.createWriting({ title, content, jenis, targetWords, categoryIds: parsedCategoryIds });
     res.status(201).json({ success: true, data: newItem });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -37,7 +47,17 @@ export const createWriting = async (req, res) => {
 export const updateWriting = async (req, res) => {
   try {
     const { title, content, jenis, targetWords, categoryIds } = req.body;
-    const updated = await writingService.updateWriting(req.params.id, { title, content, jenis, targetWords, categoryIds });
+
+    let parsedCategoryIds = categoryIds;
+    if (categoryIds && typeof categoryIds === 'string') {
+        try {
+            parsedCategoryIds = JSON.parse(categoryIds);
+        } catch (e) {
+            console.error("Error parsing categoryIds:", e);
+        }
+    }
+
+    const updated = await writingService.updateWriting(req.params.id, { title, content, jenis, targetWords, categoryIds: parsedCategoryIds });
     res.status(200).json({ success: true, data: updated });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

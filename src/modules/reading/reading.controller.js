@@ -27,7 +27,17 @@ export const createReading = async (req, res) => {
     if (!title || !content) {
       return res.status(400).json({ success: false, message: 'Title and content are required' });
     }
-    const newReading = await readingService.createReading({ title, content, categoryIds });
+
+    let parsedCategoryIds = categoryIds;
+    if (categoryIds && typeof categoryIds === 'string') {
+        try {
+            parsedCategoryIds = JSON.parse(categoryIds);
+        } catch (e) {
+            console.error("Error parsing categoryIds:", e);
+        }
+    }
+
+    const newReading = await readingService.createReading({ title, content, categoryIds: parsedCategoryIds });
     res.status(201).json({ success: true, data: newReading, message: 'Reading created successfully' });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -37,7 +47,17 @@ export const createReading = async (req, res) => {
 export const updateReading = async (req, res) => {
   try {
     const { title, content, categoryIds } = req.body;
-    const updatedReading = await readingService.updateReading(req.params.id, { title, content, categoryIds });
+    
+    let parsedCategoryIds = categoryIds;
+    if (categoryIds && typeof categoryIds === 'string') {
+        try {
+            parsedCategoryIds = JSON.parse(categoryIds);
+        } catch (e) {
+            console.error("Error parsing categoryIds:", e);
+        }
+    }
+
+    const updatedReading = await readingService.updateReading(req.params.id, { title, content, categoryIds: parsedCategoryIds });
     res.json({ success: true, data: updatedReading, message: 'Reading updated successfully' });
   } catch (error) {
     if (error.code === 'P2025') {

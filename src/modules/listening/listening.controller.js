@@ -29,11 +29,20 @@ export const getListeningById = async (req, res) => {
 
 export const createListening = async (req, res) => {
   try {
-    const { title, content } = req.body;
+    const { title, content, categoryIds } = req.body;
     let { audioUrl } = req.body;
 
     if (!title || !content) {
       return res.status(400).json({ success: false, message: 'Title and content are required' });
+    }
+
+    let parsedCategoryIds = categoryIds;
+    if (categoryIds && typeof categoryIds === 'string') {
+        try {
+            parsedCategoryIds = JSON.parse(categoryIds);
+        } catch (e) {
+            console.error("Error parsing categoryIds:", e);
+        }
     }
 
     // If file is uploaded, use its path
@@ -41,7 +50,7 @@ export const createListening = async (req, res) => {
       audioUrl = `/uploads/audiomaster/${req.file.filename}`;
     }
 
-    const newItem = await listeningService.createListening({ title, content, audioUrl });
+    const newItem = await listeningService.createListening({ title, content, audioUrl, categoryIds: parsedCategoryIds });
     res.status(201).json({ success: true, data: newItem });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -50,15 +59,24 @@ export const createListening = async (req, res) => {
 
 export const updateListening = async (req, res) => {
   try {
-    const { title, content } = req.body;
+    const { title, content, categoryIds } = req.body;
     let { audioUrl } = req.body;
+
+    let parsedCategoryIds = categoryIds;
+    if (categoryIds && typeof categoryIds === 'string') {
+        try {
+            parsedCategoryIds = JSON.parse(categoryIds);
+        } catch (e) {
+            console.error("Error parsing categoryIds:", e);
+        }
+    }
 
     // If file is uploaded, update its path
     if (req.file) {
       audioUrl = `/uploads/audiomaster/${req.file.filename}`;
     }
 
-    const updated = await listeningService.updateListening(req.params.id, { title, content, audioUrl });
+    const updated = await listeningService.updateListening(req.params.id, { title, content, audioUrl, categoryIds: parsedCategoryIds });
     res.status(200).json({ success: true, data: updated });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
