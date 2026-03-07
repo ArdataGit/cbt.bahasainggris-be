@@ -74,6 +74,7 @@ model ReadingOption {
   id            Int                        @id @default(autoincrement())
   soalReadingId Int
   text          String                     @db.Text
+  imageUrl      String?
   isCorrect     Boolean                    @default(false)
   soalReading   SoalReading                @relation(fields: [soalReadingId], references: [id], onDelete: Cascade)
   userHistories UserReadingOptionHistory[]
@@ -121,6 +122,7 @@ model ListeningOption {
   id              Int                          @id @default(autoincrement())
   soalListeingId  Int
   text            String                       @db.Text
+  imageUrl        String?
   isCorrect       Boolean                      @default(false)
   soalListeing    SoalListeing                 @relation(fields: [soalListeingId], references: [id], onDelete: Cascade)
   optionHistories UserListeningOptionHistory[]

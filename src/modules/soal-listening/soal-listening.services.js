@@ -24,6 +24,7 @@ export const createSoal = async (data) => {
       options: {
         create: options.map(opt => ({
           text: opt.text,
+          imageUrl: opt.imageUrl || null,
           isCorrect: opt.isCorrect
         }))
       }
@@ -56,6 +57,7 @@ export const updateSoal = async (id, data) => {
       data: options.map(opt => ({
         soalListeingId: parseInt(id),
         text: opt.text,
+        imageUrl: opt.imageUrl || null,
         isCorrect: opt.isCorrect
       }))
     });
