@@ -14,6 +14,7 @@ import speakingCategoryRoutes from '../modules/speaking-category/speaking-catego
 import paketRoutes from '../modules/paket/paket.routes.js';
 import dataUserRoutes from '../modules/data-user/data-user.routes.js';
 import historyRoutes from '../modules/history/history.routes.js';
+import settingRoutes from '../modules/setting/setting.routes.js';
 import upload from '../utils/upload.js';
 
 const router = express.Router();
@@ -24,10 +25,17 @@ router.post('/upload', upload.single('image'), (req, res) => {
       return res.status(400).json({ success: false, message: 'No file uploaded' });
     }
     
-    // Use BACKEND_URL if provided, else construct from request
-    const protocol = req.protocol;
-    const host = req.get('host');
-    const baseUrl = process.env.BACKEND_URL || `${protocol}://${host}`;
+    // For live server, we'll favor the official domain to avoid Mixed Content
+    const protocol = req.headers['x-forwarded-proto'] || req.protocol;
+    const host = req.headers['x-forwarded-host'] || req.get('host');
+    
+    // Explicitly check for localhost overrides and prioritize the live domain if on production-like host
+    let baseUrl = `${protocol}://${host}`;
+    if (host.includes('english.ujian.or.id')) {
+      baseUrl = 'https://english.ujian.or.id';
+    } else if (process.env.BACKEND_URL && !process.env.BACKEND_URL.includes('localhost:3002')) {
+       baseUrl = process.env.BACKEND_URL;
+    }
     
     const fileUrl = `${baseUrl}/api/uploads/readings/${req.file.filename}`;
     
@@ -57,5 +65,6 @@ router.use('/speaking-categories', speakingCategoryRoutes);
 router.use('/pakets', paketRoutes);
 router.use('/data-users', dataUserRoutes);
 router.use('/history', historyRoutes);
+router.use('/settings', settingRoutes);
 
 export default router;

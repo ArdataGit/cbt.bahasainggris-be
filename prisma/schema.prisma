@@ -381,3 +381,14 @@ enum JenisWriting {
   ESSAY
   SHORT_ANSWER
 }
+model Setting {
+  id              Int      @id @default(autoincrement())
+  logoUrl         String?
+  testInstructions String? @db.LongText
+  readingInstructions   String? @db.LongText
+  listeningInstructions String? @db.LongText
+  writingInstructions   String? @db.LongText
+  speakingInstructions  String? @db.LongText
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
