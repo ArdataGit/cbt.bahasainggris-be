@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { sendScoreEmail as sendEmailUtil } from '../../utils/email.js';
 const prisma = new PrismaClient();
 
 export const saveReadingHistory = async (data) => {
@@ -205,5 +206,21 @@ export const updateSpeakingScore = async (id, score) => {
     return await prisma.userSpeakingHistory.update({
         where: { id: parseInt(id) },
         data: { score: parseInt(score) }
+    });
+};
+
+export const sendScoreEmail = async (userDataId, scoreUrl) => {
+    const user = await prisma.dataUser.findUnique({
+        where: { id: parseInt(userDataId) }
+    });
+
+    if (!user) throw new Error('User not found');
+    if (user.isEmailSent) return { success: true, message: 'Email already sent' };
+
+    await sendEmailUtil(user.email, user.name, scoreUrl);
+
+    return await prisma.dataUser.update({
+        where: { id: parseInt(userDataId) },
+        data: { isEmailSent: true }
     });
 };

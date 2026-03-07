@@ -23,6 +23,7 @@ model DataUser {
   email              String
   phone              String?
   paketId            Int?
+  isEmailSent        Boolean                @default(false)
   createdAt          DateTime               @default(now())
   updatedAt          DateTime               @updatedAt
   listeningHistories UserListeningHistory[]

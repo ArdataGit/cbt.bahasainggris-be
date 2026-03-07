@@ -14,5 +14,6 @@ router.get('/user', historyController.getUserHistory);
 router.get('/', historyController.getAllHistory);
 router.patch('/writing/:id/score', historyController.updateWritingScore);
 router.patch('/speaking/:id/score', historyController.updateSpeakingScore);
+router.post('/send-email', historyController.sendScoreEmail);
 
 export default router;

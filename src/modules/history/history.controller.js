@@ -155,3 +155,26 @@ export const updateSpeakingScore = async (req, res) => {
         });
     }
 };
+
+export const sendScoreEmail = async (req, res) => {
+    try {
+        const { userDataId, scoreUrl } = req.body;
+        if (!userDataId || !scoreUrl) {
+            return res.status(400).json({
+                success: false,
+                message: 'userDataId and scoreUrl are required'
+            });
+        }
+        const result = await historyServices.sendScoreEmail(userDataId, scoreUrl);
+        res.status(200).json({
+            success: true,
+            message: 'Score email sent successfully',
+            data: result,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
