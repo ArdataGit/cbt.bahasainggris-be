@@ -11,9 +11,8 @@ app.use(morgan('dev'));
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use('/public', express.static('src/public'));
-app.use('/uploads', express.static('src/public/uploads'));
 app.use('/api/uploads', express.static('src/public/uploads'));
+app.use('/uploads', express.static('src/public/uploads')); // Fallback for direct /uploads/ links
 
 app.use('/api', routes);
 app.use('/api/auth', authRoutes);
