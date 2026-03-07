@@ -6,6 +6,7 @@ import authRoutes from './modules/auth/auth.routes.js';
 
 const app = express();
 
+app.set('trust proxy', true);
 app.use(morgan('dev'));
 app.use(cors());
 app.use(express.json());

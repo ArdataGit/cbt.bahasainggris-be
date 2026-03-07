@@ -24,7 +24,12 @@ router.post('/upload', upload.single('image'), (req, res) => {
       return res.status(400).json({ success: false, message: 'No file uploaded' });
     }
     
-    const fileUrl = `${process.env.BACKEND_URL || 'http://localhost:3001'}/api/uploads/readings/${req.file.filename}`;
+    // Use BACKEND_URL if provided, else construct from request
+    const protocol = req.protocol;
+    const host = req.get('host');
+    const baseUrl = process.env.BACKEND_URL || `${protocol}://${host}`;
+    
+    const fileUrl = `${baseUrl}/api/uploads/readings/${req.file.filename}`;
     
     res.json({
       success: true,
