@@ -24,8 +24,12 @@ export const getPaketById = async (id) => {
         where: { id: parseInt(id) },
         include: {
             readingCategories: { include: { readings: { select: { id: true, title: true } } } },
+            listenings: { select: { id: true, title: true } },
             listeningCategories: { include: { listenings: { select: { id: true, title: true } } } },
+            readings: { select: { id: true, title: true } },
+            writings: { select: { id: true, title: true } },
             writingCategories: { include: { writings: { select: { id: true, title: true } } } },
+            speakings: { select: { id: true, title: true } },
             speakingCategories: { include: { speakings: { select: { id: true, title: true } } } }
         }
     });
