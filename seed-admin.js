@@ -6,8 +6,10 @@ const prisma = new PrismaClient();
 async function main() {
   const hashedPassword = await bcrypt.hash('admin123', 10);
   const admin = await prisma.user.upsert({
-    where: { id: 1 }, // Assuming ID 1 or just matching email if we add a unique constraint
-    update: {},
+    where: { email: 'admin@example.com' },
+    update: {
+      role: 'admin',
+    },
     create: {
       name: 'Admin User',
       email: 'admin@example.com',

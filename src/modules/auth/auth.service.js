@@ -5,13 +5,19 @@ import jwt from 'jsonwebtoken';
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-key';
 
-export const register = async (name, email, password, role = 'user') => {
+export const register = async (name, email, password, phone = null, provinceId = null, provinceName = null, cityId = null, cityName = null, address = null, role = 'user') => {
   const hashedPassword = await bcrypt.hash(password, 10);
   return await prisma.user.create({
     data: {
       name,
       email,
       password: hashedPassword,
+      phone,
+      provinceId,
+      provinceName,
+      cityId,
+      cityName,
+      address,
       role,
     },
   });
