@@ -6,6 +6,16 @@ export const getAllPakets = async () => {
         include: {
             paketCategory: true,
             subPaketCategory: true,
+            paketPembelians: {
+                include: {
+                    pakets: {
+                        select: {
+                            id: true,
+                            name: true
+                        }
+                    }
+                }
+            },
             _count: {
                 select: {
                     readingCategories: true,

@@ -34,13 +34,15 @@ export const getPaketPembelianById = async (id) => {
 };
 
 export const createPaketPembelian = async (data) => {
-    const { name, price, label, paketIds } = data;
+    const { name, price, label, description, duration, paketIds } = data;
     
     return await prisma.paketPembelian.create({
         data: {
             name,
             price: parseInt(price),
             label,
+            description,
+            duration: parseInt(duration),
             pakets: {
                 connect: paketIds ? paketIds.map(id => ({ id: parseInt(id) })) : []
             }
@@ -52,7 +54,7 @@ export const createPaketPembelian = async (data) => {
 };
 
 export const updatePaketPembelian = async (id, data) => {
-    const { name, price, label, paketIds } = data;
+    const { name, price, label, description, duration, paketIds } = data;
     
     return await prisma.paketPembelian.update({
         where: { id: parseInt(id) },
@@ -60,6 +62,8 @@ export const updatePaketPembelian = async (id, data) => {
             name,
             price: price !== undefined ? parseInt(price) : undefined,
             label,
+            description,
+            duration: duration !== undefined ? parseInt(duration) : undefined,
             pakets: {
                 set: paketIds ? paketIds.map(paketId => ({ id: parseInt(paketId) })) : []
             }

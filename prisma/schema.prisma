@@ -266,7 +266,35 @@ model PaketPembelian{
   name      String
   price     Int
   label     LabelPaket
-  pakets    Paket[]
+  description String?
+  duration    Int      @default(0)
+  pakets      Paket[]
+  pembelianUsers PembelianUser[]
+  historyPembelians HistoryPembelian[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model PembelianUser{
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  paketPembelianId Int
+  paketPembelian PaketPembelian @relation(fields: [paketPembelianId], references: [id], onDelete: Cascade)
+  duration  Int
+  status    StatusPembelian
+  expiredDuration DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model HistoryPembelian{
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  paketPembelianId Int
+  paketPembelian PaketPembelian @relation(fields: [paketPembelianId], references: [id], onDelete: Cascade)
+  duration  Int
+  status    StatusPembelian
+  expiredDuration DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -443,6 +471,14 @@ enum LabelPaket {
   FREE
   PREMIUM
   VIP
+}
+
+enum StatusPembelian {
+  PENDING
+  SUCCESS
+  FAILED
+  EXPIRED
+  OVERDUE
 }
 
 model Setting {
