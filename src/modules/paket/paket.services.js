@@ -48,7 +48,8 @@ export const createPaket = async (data) => {
         readingCategoryIds, 
         listeningCategoryIds, 
         writingCategoryIds, 
-        speakingCategoryIds 
+        speakingCategoryIds,
+        isFree
     } = data;
 
     const formatRelationalIds = (ids) => {
@@ -67,6 +68,7 @@ export const createPaket = async (data) => {
             description,
             paketCategoryId: paketCategoryId ? parseInt(paketCategoryId) : null,
             subPaketCategoryId: subPaketCategoryId ? parseInt(subPaketCategoryId) : null,
+            isFree: isFree === true || isFree === 'true',
             readingCategories: { connect: formatRelationalIds(readingCategoryIds) },
             listeningCategories: { connect: formatRelationalIds(listeningCategoryIds) },
             writingCategories: { connect: formatRelationalIds(writingCategoryIds) },
@@ -92,7 +94,8 @@ export const updatePaket = async (id, data) => {
         readingCategoryIds, 
         listeningCategoryIds, 
         writingCategoryIds, 
-        speakingCategoryIds 
+        speakingCategoryIds,
+        isFree
     } = data;
     
     const updateData = {};
@@ -100,6 +103,7 @@ export const updatePaket = async (id, data) => {
     if (description !== undefined) updateData.description = description;
     if (paketCategoryId !== undefined) updateData.paketCategoryId = paketCategoryId ? parseInt(paketCategoryId) : null;
     if (subPaketCategoryId !== undefined) updateData.subPaketCategoryId = subPaketCategoryId ? parseInt(subPaketCategoryId) : null;
+    if (isFree !== undefined) updateData.isFree = isFree === true || isFree === 'true';
 
     const formatRelationalIds = (ids) => {
          if (!ids) return [];

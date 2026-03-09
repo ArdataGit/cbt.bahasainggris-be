@@ -26,10 +26,13 @@ export const createPaket = async (req, res) => {
         const { 
             name, 
             description, 
+            paketCategoryId,
+            subPaketCategoryId,
             readingCategoryIds, 
             listeningCategoryIds, 
             writingCategoryIds, 
-            speakingCategoryIds 
+            speakingCategoryIds,
+            isFree
         } = req.body;
         
         // Helper to safely parse JSON arrays if they come as strings
@@ -52,10 +55,13 @@ export const createPaket = async (req, res) => {
         const paket = await paketService.createPaket({ 
             name, 
             description, 
+            paketCategoryId,
+            subPaketCategoryId,
             readingCategoryIds: parsedReadingCategoryIds,
             listeningCategoryIds: parsedListeningCategoryIds,
             writingCategoryIds: parsedWritingCategoryIds,
-            speakingCategoryIds: parsedSpeakingCategoryIds
+            speakingCategoryIds: parsedSpeakingCategoryIds,
+            isFree
         });
         
         res.status(201).json({ success: true, data: paket });
@@ -69,10 +75,13 @@ export const updatePaket = async (req, res) => {
         const { 
             name, 
             description, 
+            paketCategoryId,
+            subPaketCategoryId,
             readingCategoryIds, 
             listeningCategoryIds, 
             writingCategoryIds, 
-            speakingCategoryIds 
+            speakingCategoryIds,
+            isFree
         } = req.body;
         
          // Helper to safely parse JSON arrays if they come as strings
@@ -95,10 +104,13 @@ export const updatePaket = async (req, res) => {
         const paket = await paketService.updatePaket(req.params.id, { 
             name, 
             description, 
+            paketCategoryId,
+            subPaketCategoryId,
             readingCategoryIds: parsedReadingCategoryIds,
             listeningCategoryIds: parsedListeningCategoryIds,
             writingCategoryIds: parsedWritingCategoryIds,
-            speakingCategoryIds: parsedSpeakingCategoryIds
+            speakingCategoryIds: parsedSpeakingCategoryIds,
+            isFree
         });
         
         res.status(200).json({ success: true, data: paket });

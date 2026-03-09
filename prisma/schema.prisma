@@ -241,6 +241,7 @@ model Paket {
   description         String?
   paketCategoryId     Int?
   subPaketCategoryId  Int?
+  isFree              Boolean @default(false)
   paketCategory       PaketCategory?      @relation(fields: [paketCategoryId], references: [id])
   subPaketCategory    SubPaketCategory?   @relation(fields: [subPaketCategoryId], references: [id])
   createdAt           DateTime            @updatedAt
@@ -253,9 +254,19 @@ model Paket {
   writings            Writing[]           @relation("PaketToWriting")
   writingCategories   WritingCategory[]   @relation("PaketToWritingCategory")
   dataUsers           DataUser[]
+  landingPaket        LandingPaket?
 
   @@index([paketCategoryId], map: "Paket_paketCategoryId_fkey")
   @@index([subPaketCategoryId], map: "Paket_subPaketCategoryId_fkey")
+}
+
+model LandingPaket {
+  id        Int      @id @default(autoincrement())
+  paketId   Int      @unique
+  paket     Paket    @relation(fields: [paketId], references: [id], onDelete: Cascade)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model UserReadingHistory {

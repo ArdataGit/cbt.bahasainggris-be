@@ -17,6 +17,7 @@ import subPaketCategoryRoutes from '../modules/sub-paket-category/sub-paket-cate
 import dataUserRoutes from '../modules/data-user/data-user.routes.js';
 import historyRoutes from '../modules/history/history.routes.js';
 import settingRoutes from '../modules/setting/setting.routes.js';
+import landingPaketRoutes from '../modules/landing-paket/landing-paket.routes.js';
 import upload from '../utils/upload.js';
 
 const router = express.Router();
@@ -70,5 +71,6 @@ router.use('/sub-paket-categories', subPaketCategoryRoutes);
 router.use('/data-users', dataUserRoutes);
 router.use('/history', historyRoutes);
 router.use('/settings', settingRoutes);
+router.use('/landing-pakets', landingPaketRoutes);
 
 export default router;

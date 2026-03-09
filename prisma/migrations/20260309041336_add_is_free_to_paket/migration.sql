@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `Paket` ADD COLUMN `isFree` BOOLEAN NOT NULL DEFAULT false;
