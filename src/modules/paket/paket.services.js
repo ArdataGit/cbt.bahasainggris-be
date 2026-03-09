@@ -4,6 +4,8 @@ const prisma = new PrismaClient();
 export const getAllPakets = async () => {
     return await prisma.paket.findMany({
         include: {
+            paketCategory: true,
+            subPaketCategory: true,
             _count: {
                 select: {
                     readingCategories: true,
@@ -23,6 +25,8 @@ export const getPaketById = async (id) => {
     return await prisma.paket.findUnique({
         where: { id: parseInt(id) },
         include: {
+            paketCategory: true,
+            subPaketCategory: true,
             readingCategories: { include: { readings: { select: { id: true, title: true } } } },
             listenings: { select: { id: true, title: true } },
             listeningCategories: { include: { listenings: { select: { id: true, title: true } } } },
@@ -39,6 +43,8 @@ export const createPaket = async (data) => {
     const { 
         name, 
         description, 
+        paketCategoryId,
+        subPaketCategoryId,
         readingCategoryIds, 
         listeningCategoryIds, 
         writingCategoryIds, 
@@ -59,12 +65,16 @@ export const createPaket = async (data) => {
         data: {
             name,
             description,
+            paketCategoryId: paketCategoryId ? parseInt(paketCategoryId) : null,
+            subPaketCategoryId: subPaketCategoryId ? parseInt(subPaketCategoryId) : null,
             readingCategories: { connect: formatRelationalIds(readingCategoryIds) },
             listeningCategories: { connect: formatRelationalIds(listeningCategoryIds) },
             writingCategories: { connect: formatRelationalIds(writingCategoryIds) },
             speakingCategories: { connect: formatRelationalIds(speakingCategoryIds) },
         },
         include: {
+            paketCategory: true,
+            subPaketCategory: true,
             readingCategories: true,
             listeningCategories: true,
             writingCategories: true,
@@ -77,6 +87,8 @@ export const updatePaket = async (id, data) => {
     const { 
         name, 
         description, 
+        paketCategoryId,
+        subPaketCategoryId,
         readingCategoryIds, 
         listeningCategoryIds, 
         writingCategoryIds, 
@@ -86,6 +98,8 @@ export const updatePaket = async (id, data) => {
     const updateData = {};
     if (name !== undefined) updateData.name = name;
     if (description !== undefined) updateData.description = description;
+    if (paketCategoryId !== undefined) updateData.paketCategoryId = paketCategoryId ? parseInt(paketCategoryId) : null;
+    if (subPaketCategoryId !== undefined) updateData.subPaketCategoryId = subPaketCategoryId ? parseInt(subPaketCategoryId) : null;
 
     const formatRelationalIds = (ids) => {
          if (!ids) return [];
@@ -114,6 +128,8 @@ export const updatePaket = async (id, data) => {
         where: { id: parseInt(id) },
         data: updateData,
         include: {
+            paketCategory: true,
+            subPaketCategory: true,
             readingCategories: true,
             listeningCategories: true,
             writingCategories: true,

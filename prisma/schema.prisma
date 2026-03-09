@@ -233,6 +233,10 @@ model Paket {
   id                  Int                 @id @default(autoincrement())
   name                String
   description         String?
+  paketCategoryId     Int?
+  subPaketCategoryId  Int?
+  paketCategory       PaketCategory?      @relation(fields: [paketCategoryId], references: [id])
+  subPaketCategory    SubPaketCategory?   @relation(fields: [subPaketCategoryId], references: [id])
   createdAt           DateTime            @updatedAt
   listeningCategories ListeningCategory[] @relation("ListeningCategoryToPaket")
   listenings          Listening[]         @relation("ListeningToPaket")
@@ -243,6 +247,9 @@ model Paket {
   writings            Writing[]           @relation("PaketToWriting")
   writingCategories   WritingCategory[]   @relation("PaketToWritingCategory")
   dataUsers           DataUser[]
+
+  @@index([paketCategoryId], map: "Paket_paketCategoryId_fkey")
+  @@index([subPaketCategoryId], map: "Paket_subPaketCategoryId_fkey")
 }
 
 model UserReadingHistory {
@@ -370,6 +377,28 @@ model UserSpeakingHistory {
 
   @@index([speakingId], map: "UserSpeakingHistory_speakingId_fkey")
   @@index([userDataId], map: "UserSpeakingHistory_userDataId_fkey")
+}
+
+
+model PaketCategory {
+  id           Int                @id @default(autoincrement())
+  categoryName String
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  subCategories SubPaketCategory[]
+  pakets       Paket[]
+}
+
+model SubPaketCategory {
+  id              Int           @id @default(autoincrement())
+  paketCategoryId Int
+  subCategoryName String
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  paketCategory   PaketCategory @relation(fields: [paketCategoryId], references: [id], onDelete: Cascade)
+  pakets          Paket[]
+
+  @@index([paketCategoryId], map: "SubPaketCategory_paketCategoryId_fkey")
 }
 
 enum JenisSpeaking {
