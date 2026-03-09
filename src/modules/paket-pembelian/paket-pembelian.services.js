@@ -79,3 +79,57 @@ export const deletePaketPembelian = async (id) => {
         where: { id: parseInt(id) }
     });
 };
+
+export const getAllUserPembelians = async () => {
+    return await prisma.pembelianUser.findMany({
+        include: {
+            paketPembelian: true,
+            user: {
+                select: {
+                    id: true,
+                    name: true,
+                    email: true
+                }
+            }
+        },
+        orderBy: {
+            createdAt: 'desc'
+        }
+    });
+};
+
+export const updateUserPembelianStatus = async (id, status) => {
+    const pembelian = await prisma.pembelianUser.findUnique({
+        where: { id: parseInt(id) },
+        include: { paketPembelian: true }
+    });
+
+    if (!pembelian) throw new Error('Pembelian not found');
+
+    const updateData = { status };
+
+    // If status is changed to SUCCESS, calculate expiry
+    if (status === 'SUCCESS' && pembelian.status !== 'SUCCESS') {
+        const expiredDate = new Date();
+        expiredDate.setDate(expiredDate.getDate() + pembelian.duration);
+        updateData.expiredDuration = expiredDate;
+
+        // Create a history entry as well
+        await prisma.historyPembelian.create({
+            data: {
+                userId: pembelian.userId,
+                paketPembelianId: pembelian.paketPembelianId,
+                amount: pembelian.amount,
+                status: 'SUCCESS',
+                duration: pembelian.duration,
+                expiredDuration: expiredDate,
+                merchantRef: pembelian.merchantRef
+            }
+        });
+    }
+
+    return await prisma.pembelianUser.update({
+        where: { id: parseInt(id) },
+        data: updateData
+    });
+};

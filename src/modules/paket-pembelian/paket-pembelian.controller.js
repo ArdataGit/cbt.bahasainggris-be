@@ -47,3 +47,22 @@ export const deletePaketPembelian = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
+export const getAllUserPembelians = async (req, res) => {
+    try {
+        const results = await paketPembelianService.getAllUserPembelians();
+        res.status(200).json({ success: true, data: results });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+export const updateUserPembelianStatus = async (req, res) => {
+    try {
+        const { status } = req.body;
+        const result = await paketPembelianService.updateUserPembelianStatus(req.params.id, status);
+        res.status(200).json({ success: true, data: result });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};

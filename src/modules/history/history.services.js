@@ -221,6 +221,18 @@ export const sendScoreEmail = async (userDataId, scoreUrl) => {
 
     return await prisma.dataUser.update({
         where: { id: parseInt(userDataId) },
-        data: { isEmailSent: true }
+        data: { idEmailSent: true }
+    });
+};
+
+export const getPembelianHistory = async (userId) => {
+    return await prisma.pembelianUser.findMany({
+        where: { userId: parseInt(userId) },
+        include: {
+            paketPembelian: true,
+        },
+        orderBy: {
+            createdAt: 'desc',
+        },
     });
 };

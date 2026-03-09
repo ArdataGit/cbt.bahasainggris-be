@@ -1,8 +1,8 @@
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
-export const getAllPakets = async () => {
-    return await prisma.paket.findMany({
+export const getAllPakets = async (userId = null) => {
+    const pakets = await prisma.paket.findMany({
         include: {
             paketCategory: true,
             subPaketCategory: true,
@@ -28,6 +28,35 @@ export const getAllPakets = async () => {
         orderBy: {
             createdAt: 'desc'
         }
+    });
+
+    if (!userId) return pakets;
+
+    // If userId is provided, check for active purchases
+    const activePurchases = await prisma.pembelianUser.findMany({
+        where: {
+            userId: parseInt(userId),
+            status: 'SUCCESS',
+            expiredDuration: {
+                gt: new Date()
+            }
+        },
+        select: {
+            paketPembelianId: true
+        }
+    });
+
+    const purchasedBundleIds = activePurchases.map(p => p.paketPembelianId);
+
+    return pakets.map(paket => {
+        // A package is purchased if any of its bundles are in purchasedBundleIds
+        const isPurchased = paket.paketPembelians.some(bundle => 
+            purchasedBundleIds.includes(bundle.id)
+        );
+        return {
+            ...paket,
+            isPurchased
+        };
     });
 };
 

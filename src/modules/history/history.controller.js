@@ -178,3 +178,19 @@ export const sendScoreEmail = async (req, res) => {
         });
     }
 };
+
+export const getPembelianHistory = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const result = await historyServices.getPembelianHistory(userId);
+        res.status(200).json({
+            success: true,
+            data: result,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};

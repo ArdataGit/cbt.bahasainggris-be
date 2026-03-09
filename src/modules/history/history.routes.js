@@ -1,6 +1,7 @@
 import express from 'express';
 import * as historyController from './history.controller.js';
 import { uploadTo } from '../../middleware/upload.js';
+import { authenticateToken } from '../../middleware/auth.middleware.js';
 
 const router = express.Router();
 
@@ -15,5 +16,6 @@ router.get('/', historyController.getAllHistory);
 router.patch('/writing/:id/score', historyController.updateWritingScore);
 router.patch('/speaking/:id/score', historyController.updateSpeakingScore);
 router.post('/send-email', historyController.sendScoreEmail);
+router.get('/pembelian', authenticateToken, historyController.getPembelianHistory);
 
 export default router;

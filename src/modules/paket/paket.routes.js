@@ -1,11 +1,12 @@
 import express from 'express';
 const router = express.Router();
 import * as paketController from './paket.controller.js';
+import { authenticateToken, isAdmin, optionalAuthenticateToken } from '../../middleware/auth.middleware.js';
 
-router.get('/', paketController.getAllPakets);
-router.get('/:id', paketController.getPaketById);
-router.post('/', paketController.createPaket);
-router.put('/:id', paketController.updatePaket);
-router.delete('/:id', paketController.deletePaket);
+router.get('/', optionalAuthenticateToken, paketController.getAllPakets);
+router.get('/:id', optionalAuthenticateToken, paketController.getPaketById);
+router.post('/', authenticateToken, isAdmin, paketController.createPaket);
+router.put('/:id', authenticateToken, isAdmin, paketController.updatePaket);
+router.delete('/:id', authenticateToken, isAdmin, paketController.deletePaket);
 
 export default router;

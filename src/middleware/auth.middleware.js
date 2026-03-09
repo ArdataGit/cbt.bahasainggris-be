@@ -26,3 +26,19 @@ export const isAdmin = (req, res, next) => {
     res.status(403).json({ message: 'Access denied. Admin role required.' });
   }
 };
+
+export const optionalAuthenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+    return next();
+  }
+
+  jwt.verify(token, JWT_SECRET, (err, user) => {
+    if (!err) {
+      req.user = user;
+    }
+    next();
+  });
+};

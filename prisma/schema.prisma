@@ -21,6 +21,8 @@ model User {
   role         String   @default("user")
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+  pembelianUsers PembelianUser[]
+  historyPembelians HistoryPembelian[]
 }
 
 model DataUser {
@@ -275,25 +277,31 @@ model PaketPembelian{
   updatedAt   DateTime @updatedAt
 }
 
-model PembelianUser{
+model PembelianUser {
   id        Int      @id @default(autoincrement())
   userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   paketPembelianId Int
   paketPembelian PaketPembelian @relation(fields: [paketPembelianId], references: [id], onDelete: Cascade)
   duration  Int
   status    StatusPembelian
+  merchantRef String?
+  amount    Int      @default(0)
   expiredDuration DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model HistoryPembelian{
+model HistoryPembelian {
   id        Int      @id @default(autoincrement())
   userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   paketPembelianId Int
   paketPembelian PaketPembelian @relation(fields: [paketPembelianId], references: [id], onDelete: Cascade)
   duration  Int
   status    StatusPembelian
+  merchantRef String?
+  amount    Int      @default(0)
   expiredDuration DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -2,7 +2,8 @@ import * as paketService from './paket.services.js';
 
 export const getAllPakets = async (req, res) => {
     try {
-        const pakets = await paketService.getAllPakets();
+        const userId = req.user ? req.user.id : null;
+        const pakets = await paketService.getAllPakets(userId);
         res.status(200).json({ success: true, data: pakets });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
