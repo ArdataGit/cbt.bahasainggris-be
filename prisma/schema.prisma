@@ -255,9 +255,20 @@ model Paket {
   writingCategories   WritingCategory[]   @relation("PaketToWritingCategory")
   dataUsers           DataUser[]
   landingPaket        LandingPaket?
+  paketPembelians     PaketPembelian[]
 
   @@index([paketCategoryId], map: "Paket_paketCategoryId_fkey")
   @@index([subPaketCategoryId], map: "Paket_subPaketCategoryId_fkey")
+}
+
+model PaketPembelian{
+  id        Int      @id @default(autoincrement())
+  name      String
+  price     Int
+  label     LabelPaket
+  pakets    Paket[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model LandingPaket {
@@ -427,6 +438,13 @@ enum JenisWriting {
   ESSAY
   SHORT_ANSWER
 }
+
+enum LabelPaket {
+  FREE
+  PREMIUM
+  VIP
+}
+
 model Setting {
   id              Int      @id @default(autoincrement())
   logoUrl         String?

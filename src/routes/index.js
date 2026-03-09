@@ -18,6 +18,7 @@ import dataUserRoutes from '../modules/data-user/data-user.routes.js';
 import historyRoutes from '../modules/history/history.routes.js';
 import settingRoutes from '../modules/setting/setting.routes.js';
 import landingPaketRoutes from '../modules/landing-paket/landing-paket.routes.js';
+import paketPembelianRoutes from '../modules/paket-pembelian/paket-pembelian.routes.js';
 import upload from '../utils/upload.js';
 
 const router = express.Router();
@@ -72,5 +73,6 @@ router.use('/data-users', dataUserRoutes);
 router.use('/history', historyRoutes);
 router.use('/settings', settingRoutes);
 router.use('/landing-pakets', landingPaketRoutes);
+router.use('/paket-pembelians', paketPembelianRoutes);
 
 export default router;
