@@ -239,7 +239,17 @@ export const getPembelianHistory = async (userId) => {
         return await prisma.pembelianUser.findMany({
             where: { userId: parsedUserId },
             include: {
-                paketPembelian: true,
+                paketPembelian: {
+                    include: {
+                        pakets: {
+                            select: {
+                                id: true,
+                                name: true,
+                                isFree: true
+                            }
+                        }
+                    }
+                },
             },
             orderBy: {
                 createdAt: 'desc',

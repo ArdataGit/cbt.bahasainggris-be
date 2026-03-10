@@ -83,7 +83,11 @@ export const deletePaketPembelian = async (id) => {
 export const getAllUserPembelians = async () => {
     return await prisma.pembelianUser.findMany({
         include: {
-            paketPembelian: true,
+            paketPembelian: {
+                include: {
+                    pakets: true
+                }
+            },
             user: {
                 select: {
                     id: true,
