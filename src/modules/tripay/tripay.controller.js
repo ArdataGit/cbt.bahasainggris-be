@@ -52,8 +52,9 @@ export const createPayment = async (req, res) => {
             }
         ];
 
+        const frontendUrl = process.env.FRONTEND_URL || req.headers.origin || 'http://localhost:3000';
         const callbackUrl = `${process.env.BACKEND_URL}/api/tripay/callback`;
-        const returnUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard`;
+        const returnUrl = `${frontendUrl}/dashboard`;
 
         const transaction = await tripayService.requestTransaction({
             method,
