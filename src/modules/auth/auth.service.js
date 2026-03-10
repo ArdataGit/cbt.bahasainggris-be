@@ -45,3 +45,21 @@ export const login = async (email, password) => {
 
   return { user, token };
 };
+
+export const getUserProfile = async (userId) => {
+  return await prisma.user.findUnique({
+    where: { id: parseInt(userId) },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      phone: true,
+      provinceId: true,
+      provinceName: true,
+      cityId: true,
+      cityName: true,
+      address: true,
+      role: true
+    }
+  });
+};

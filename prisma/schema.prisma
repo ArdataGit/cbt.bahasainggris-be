@@ -23,6 +23,11 @@ model User {
   provinceName      String?
   historyPembelians HistoryPembelian[]
   pembelianUsers    PembelianUser[]
+  dataUsers         DataUser[]
+  readingHistories   UserReadingHistory[]
+  listeningHistories UserListeningHistory[]
+  writingHistories   UserWritingHistory[]
+  speakingHistories  UserSpeakingHistory[]
 }
 
 model DataUser {
@@ -33,14 +38,17 @@ model DataUser {
   createdAt          DateTime               @default(now())
   updatedAt          DateTime               @updatedAt
   paketId            Int?
+  userId             Int?
   isEmailSent        Boolean                @default(false)
   paket              Paket?                 @relation(fields: [paketId], references: [id])
+  user               User?                  @relation(fields: [userId], references: [id])
   listeningHistories UserListeningHistory[]
   readingHistories   UserReadingHistory[]
   speakingHistories  UserSpeakingHistory[]
   writingHistories   UserWritingHistory[]
 
   @@index([paketId], map: "DataUser_paketId_fkey")
+  @@index([userId], map: "DataUser_userId_fkey")
 }
 
 model ReadingCategory {
@@ -329,15 +337,18 @@ model UserReadingHistory {
   userDataId      Int
   readingId       Int
   score           Int
+  userId          Int?
   createdAt       DateTime                   @default(now())
   updatedAt       DateTime                   @updatedAt
   reading         Reading                    @relation(fields: [readingId], references: [id], onDelete: Cascade)
   dataUser        DataUser                   @relation(fields: [userDataId], references: [id], onDelete: Cascade)
+  user            User?                      @relation(fields: [userId], references: [id])
   optionHistories UserReadingOptionHistory[]
   soalHistories   UserSoalReadingHistory[]
 
   @@index([readingId], map: "UserReadingHistory_readingId_fkey")
   @@index([userDataId], map: "UserReadingHistory_userDataId_fkey")
+  @@index([userId], map: "UserReadingHistory_userId_fkey")
 }
 
 model UserSoalReadingHistory {
@@ -370,15 +381,18 @@ model UserListeningHistory {
   userDataId      Int
   listeningId     Int
   score           Int
+  userId          Int?
   createdAt       DateTime                     @default(now())
   updatedAt       DateTime                     @updatedAt
   listening       Listening                    @relation(fields: [listeningId], references: [id], onDelete: Cascade)
   dataUser        DataUser                     @relation(fields: [userDataId], references: [id], onDelete: Cascade)
+  user            User?                        @relation(fields: [userId], references: [id])
   optionHistories UserListeningOptionHistory[]
   soalHistories   UserSoalListeningHistory[]
 
   @@index([listeningId], map: "UserListeningHistory_listeningId_fkey")
   @@index([userDataId], map: "UserListeningHistory_userDataId_fkey")
+  @@index([userId], map: "UserListeningHistory_userId_fkey")
 }
 
 model UserSoalListeningHistory {
@@ -412,14 +426,17 @@ model UserWritingHistory {
   writingId     Int
   answer        String                   @db.Text
   score         Int
+  userId        Int?
   createdAt     DateTime                 @default(now())
   updatedAt     DateTime                 @updatedAt
   soalHistories UserSoalWritingHistory[]
   dataUser      DataUser                 @relation(fields: [userDataId], references: [id], onDelete: Cascade)
   writing       Writing                  @relation(fields: [writingId], references: [id], onDelete: Cascade)
+  user          User?                    @relation(fields: [userId], references: [id])
 
   @@index([userDataId], map: "UserWritingHistory_userDataId_fkey")
   @@index([writingId], map: "UserWritingHistory_writingId_fkey")
+  @@index([userId], map: "UserWritingHistory_userId_fkey")
 }
 
 model UserSoalWritingHistory {
@@ -442,13 +459,16 @@ model UserSpeakingHistory {
   speakingId Int
   answer     String
   score      Int
+  userId     Int?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   speaking   Speaking @relation(fields: [speakingId], references: [id], onDelete: Cascade)
   dataUser   DataUser @relation(fields: [userDataId], references: [id], onDelete: Cascade)
+  user       User?    @relation(fields: [userId], references: [id])
 
   @@index([speakingId], map: "UserSpeakingHistory_speakingId_fkey")
   @@index([userDataId], map: "UserSpeakingHistory_userDataId_fkey")
+  @@index([userId], map: "UserSpeakingHistory_userId_fkey")
 }
 
 model PaketCategory {

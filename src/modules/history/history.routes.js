@@ -17,5 +17,7 @@ router.patch('/writing/:id/score', historyController.updateWritingScore);
 router.patch('/speaking/:id/score', historyController.updateSpeakingScore);
 router.post('/send-email', historyController.sendScoreEmail);
 router.get('/pembelian', authenticateToken, historyController.getPembelianHistory);
+router.get('/me', authenticateToken, historyController.getUserHistoryMe);
+router.get('/me/:id', authenticateToken, historyController.getUserHistoryMeById);
 
 export default router;

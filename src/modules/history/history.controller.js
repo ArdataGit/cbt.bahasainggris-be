@@ -209,3 +209,43 @@ export const getPembelianHistory = async (req, res) => {
         });
     }
 };
+export const getUserHistoryMe = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const result = await historyServices.getUserHistoryMe(userId);
+        res.status(200).json({
+            success: true,
+            data: result,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+export const getUserHistoryMeById = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { id } = req.params;
+        const result = await historyServices.getUserHistoryMeById(userId, id);
+        
+        if (!result) {
+            return res.status(404).json({
+                success: false,
+                message: 'History record not found or access denied',
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: result,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};

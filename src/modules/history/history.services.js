@@ -5,6 +5,12 @@ const prisma = new PrismaClient();
 export const saveReadingHistory = async (data) => {
   const { userDataId, results } = data;
 
+  // Get userId from DataUser
+  const dataUser = await prisma.dataUser.findUnique({
+    where: { id: parseInt(userDataId) },
+    select: { userId: true }
+  });
+
   const historyPromises = results.map(async (readingResult) => {
     const { readingId, score, answers } = readingResult;
 
@@ -13,6 +19,7 @@ export const saveReadingHistory = async (data) => {
         userDataId,
         readingId,
         score,
+        userId: dataUser?.userId,
         soalHistories: {
           create: answers.map((ans) => ({
             answer: ans.answer,
@@ -34,6 +41,12 @@ export const saveReadingHistory = async (data) => {
 export const saveListeningHistory = async (data) => {
     const { userDataId, results } = data;
   
+    // Get userId from DataUser
+    const dataUser = await prisma.dataUser.findUnique({
+      where: { id: parseInt(userDataId) },
+      select: { userId: true }
+    });
+
     const historyPromises = results.map(async (listeningResult) => {
       const { listeningId, score, answers } = listeningResult;
   
@@ -42,6 +55,7 @@ export const saveListeningHistory = async (data) => {
           userDataId,
           listeningId,
           score,
+          userId: dataUser?.userId,
           soalHistories: {
             create: answers.map((ans) => ({
               answer: ans.answer,
@@ -63,6 +77,12 @@ export const saveListeningHistory = async (data) => {
 export const saveWritingHistory = async (data) => {
     const { userDataId, results } = data;
   
+    // Get userId from DataUser
+    const dataUser = await prisma.dataUser.findUnique({
+      where: { id: parseInt(userDataId) },
+      select: { userId: true }
+    });
+
     const historyPromises = results.map(async (writingResult) => {
       const { writingId, score, answer, answers } = writingResult;
   
@@ -71,6 +91,7 @@ export const saveWritingHistory = async (data) => {
           userDataId,
           writingId,
           score,
+          userId: dataUser?.userId,
           answer: answer || "",
           soalHistories: answers && answers.length > 0 ? {
             create: answers.map((ans) => ({
@@ -88,6 +109,12 @@ export const saveWritingHistory = async (data) => {
 export const saveSpeakingHistory = async (data) => {
     const { userDataId, results } = data;
   
+    // Get userId from DataUser
+    const dataUser = await prisma.dataUser.findUnique({
+      where: { id: parseInt(userDataId) },
+      select: { userId: true }
+    });
+
     const historyPromises = results.map(async (speakingResult) => {
       const { speakingId, score, answer } = speakingResult;
   
@@ -96,6 +123,7 @@ export const saveSpeakingHistory = async (data) => {
           userDataId,
           speakingId,
           score,
+          userId: dataUser?.userId,
           answer: answer || "",
         },
       });
@@ -221,7 +249,7 @@ export const sendScoreEmail = async (userDataId, scoreUrl) => {
 
     return await prisma.dataUser.update({
         where: { id: parseInt(userDataId) },
-        data: { idEmailSent: true }
+        data: { isEmailSent: true }
     });
 };
 
@@ -259,4 +287,98 @@ export const getPembelianHistory = async (userId) => {
         console.error('Prisma getPembelianHistory Error:', error);
         throw error;
     }
+};
+
+export const getUserHistoryMe = async (userId) => {
+    return await prisma.dataUser.findMany({
+      where: { userId: parseInt(userId) },
+      include: {
+        paket: true,
+        readingHistories: {
+          include: {
+            reading: true,
+          }
+        },
+        listeningHistories: {
+          include: {
+            listening: true,
+          }
+        },
+        writingHistories: {
+          include: {
+            writing: true,
+          }
+        },
+        speakingHistories: {
+          include: {
+            speaking: true,
+          }
+        },
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
+};
+export const getUserHistoryMeById = async (userId, userDataId) => {
+    return await prisma.dataUser.findFirst({
+      where: { 
+        id: parseInt(userDataId),
+        userId: parseInt(userId)
+      },
+      include: {
+        readingHistories: {
+          include: {
+            reading: {
+                include: {
+                    SoalReading: {
+                        include: {
+                            options: true
+                        }
+                    }
+                }
+            },
+            soalHistories: true,
+          }
+        },
+        listeningHistories: {
+          include: {
+            listening: {
+                include: {
+                    SoalListeing: {
+                        include: {
+                            options: true
+                        }
+                    }
+                }
+            },
+            soalHistories: true,
+            optionHistories: true,
+          }
+        },
+        writingHistories: {
+          include: {
+            writing: {
+                include: {
+                    SoalWriting: {
+                        include: {
+                            AnswerWriting: true
+                        }
+                    }
+                }
+            },
+            soalHistories: true,
+          }
+        },
+        speakingHistories: {
+          include: {
+            speaking: {
+                include: {
+                    SoalSpeaking: true
+                }
+            },
+          }
+        },
+      }
+    });
 };

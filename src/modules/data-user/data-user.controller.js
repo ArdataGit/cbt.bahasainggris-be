@@ -2,7 +2,7 @@ import * as dataUserService from './data-user.services.js';
 
 export const createDataUser = async (req, res) => {
     try {
-        const { fullName, email, phone, paketId } = req.body;
+        const { fullName, email, phone, paketId, userId } = req.body;
         
         if (!fullName || !email) {
             return res.status(400).json({ success: false, message: 'Name and email are required' });
@@ -12,7 +12,8 @@ export const createDataUser = async (req, res) => {
             name: fullName, 
             email, 
             phone,
-            paketId
+            paketId,
+            userId
         });
         
         res.status(201).json({ success: true, data: dataUser });
