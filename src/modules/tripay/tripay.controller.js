@@ -34,10 +34,11 @@ export const createPayment = async (req, res) => {
                 userId: userId,
                 paketPembelianId: paket.id,
                 status: 'PENDING',
-                merchantRef: merchantRef, // Explicitly named to avoid any ambiguity
+                merchantRef: merchantRef,
                 amount: paket.price,
                 duration: paket.duration,
                 bank: method,
+                phone: user.phone || '08123456789',
                 expiredDuration: expiredPayment
             }
         });
@@ -52,7 +53,7 @@ export const createPayment = async (req, res) => {
         ];
 
         const callbackUrl = `${process.env.BACKEND_URL}/api/tripay/callback`;
-        const returnUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/history`;
+        const returnUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard`;
 
         const transaction = await tripayService.requestTransaction({
             method,
@@ -113,6 +114,7 @@ export const handleCallback = async (req, res) => {
                             status: 'SUCCESS',
                             duration: pembelian.duration,
                             bank: pembelian.bank,
+                            phone: pembelian.phone,
                             expiredDuration: expiredDate
                         }
                     })

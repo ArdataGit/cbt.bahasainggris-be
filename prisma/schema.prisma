@@ -297,6 +297,7 @@ model PembelianUser {
   amount           Int             @default(0)
   merchantRef      String?
   bank             String?
+  phone            String?
   paketPembelian   PaketPembelian  @relation(fields: [paketPembelianId], references: [id], onDelete: Cascade)
   user             User            @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -316,6 +317,7 @@ model HistoryPembelian {
   amount           Int             @default(0)
   merchantRef      String?
   bank             String?
+  phone            String?
   paketPembelian   PaketPembelian  @relation(fields: [paketPembelianId], references: [id], onDelete: Cascade)
   user             User            @relation(fields: [userId], references: [id], onDelete: Cascade)
 
