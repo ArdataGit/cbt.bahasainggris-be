@@ -37,6 +37,7 @@ export const createPayment = async (req, res) => {
                 merchantRef: merchantRef, // Explicitly named to avoid any ambiguity
                 amount: paket.price,
                 duration: paket.duration,
+                bank: method,
                 expiredDuration: expiredPayment
             }
         });
@@ -111,6 +112,7 @@ export const handleCallback = async (req, res) => {
                             amount: pembelian.amount,
                             status: 'SUCCESS',
                             duration: pembelian.duration,
+                            bank: pembelian.bank,
                             expiredDuration: expiredDate
                         }
                     })

@@ -226,13 +226,27 @@ export const sendScoreEmail = async (userDataId, scoreUrl) => {
 };
 
 export const getPembelianHistory = async (userId) => {
-    return await prisma.pembelianUser.findMany({
-        where: { userId: parseInt(userId) },
-        include: {
-            paketPembelian: true,
-        },
-        orderBy: {
-            createdAt: 'desc',
-        },
-    });
+    if (!userId) {
+        throw new Error('User ID is required for fetching pembelian history');
+    }
+    
+    try {
+        const parsedUserId = parseInt(userId);
+        if (isNaN(parsedUserId)) {
+            throw new Error(`Invalid User ID: ${userId}`);
+        }
+        
+        return await prisma.pembelianUser.findMany({
+            where: { userId: parsedUserId },
+            include: {
+                paketPembelian: true,
+            },
+            orderBy: {
+                createdAt: 'desc',
+            },
+        });
+    } catch (error) {
+        console.error('Prisma getPembelianHistory Error:', error);
+        throw error;
+    }
 };

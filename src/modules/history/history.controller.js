@@ -181,16 +181,31 @@ export const sendScoreEmail = async (req, res) => {
 
 export const getPembelianHistory = async (req, res) => {
     try {
+        console.log('getPembelianHistory Request User:', JSON.stringify(req.user));
+        
+        if (!req.user || !req.user.id) {
+            console.error('Missing User in Request');
+            return res.status(401).json({
+                success: false,
+                message: 'Unauthorized: Missing user information in token'
+            });
+        }
+
         const userId = req.user.id;
+        console.log('Fetching pembelian history for user ID:', userId);
+        
         const result = await historyServices.getPembelianHistory(userId);
+        
         res.status(200).json({
             success: true,
             data: result,
         });
     } catch (error) {
+        console.error('getPembelianHistory Controller ERROR:', error);
         res.status(500).json({
             success: false,
-            message: error.message,
+            message: error.message || 'Internal Server Error',
+            stack: error.stack
         });
     }
 };

@@ -8,21 +8,21 @@ datasource db {
 }
 
 model User {
-  id           Int      @id @default(autoincrement())
-  name         String
-  email        String   @unique
-  password     String
-  phone        String?
-  provinceId   String?
-  provinceName String?
-  cityId       String?
-  cityName     String?
-  address      String?
-  role         String   @default("user")
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  pembelianUsers PembelianUser[]
+  id                Int                @id @default(autoincrement())
+  name              String
+  email             String             @unique
+  password          String
+  role              String             @default("user")
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  address           String?
+  phone             String?
+  cityId            String?
+  cityName          String?
+  provinceId        String?
+  provinceName      String?
   historyPembelians HistoryPembelian[]
+  pembelianUsers    PembelianUser[]
 }
 
 model DataUser {
@@ -30,15 +30,15 @@ model DataUser {
   name               String
   email              String
   phone              String?
-  paketId            Int?
-  isEmailSent        Boolean                @default(false)
   createdAt          DateTime               @default(now())
   updatedAt          DateTime               @updatedAt
+  paketId            Int?
+  isEmailSent        Boolean                @default(false)
+  paket              Paket?                 @relation(fields: [paketId], references: [id])
   listeningHistories UserListeningHistory[]
   readingHistories   UserReadingHistory[]
   speakingHistories  UserSpeakingHistory[]
   writingHistories   UserWritingHistory[]
-  paket              Paket?                 @relation(fields: [paketId], references: [id])
 
   @@index([paketId], map: "DataUser_paketId_fkey")
 }
@@ -82,8 +82,8 @@ model ReadingOption {
   id            Int                        @id @default(autoincrement())
   soalReadingId Int
   text          String                     @db.Text
-  imageUrl      String?
   isCorrect     Boolean                    @default(false)
+  imageUrl      String?
   soalReading   SoalReading                @relation(fields: [soalReadingId], references: [id], onDelete: Cascade)
   userHistories UserReadingOptionHistory[]
 
@@ -130,8 +130,8 @@ model ListeningOption {
   id              Int                          @id @default(autoincrement())
   soalListeingId  Int
   text            String                       @db.Text
-  imageUrl        String?
   isCorrect       Boolean                      @default(false)
+  imageUrl        String?
   soalListeing    SoalListeing                 @relation(fields: [soalListeingId], references: [id], onDelete: Cascade)
   optionHistories UserListeningOptionHistory[]
 
@@ -153,10 +153,10 @@ model Writing {
   id               Int                  @id @default(autoincrement())
   title            String
   content          String
-  jenis         JenisWriting @default(ESSAY)
-  targetWords      Int @default(150)
   createdAt        DateTime             @default(now())
   updatedAt        DateTime             @updatedAt
+  jenis            JenisWriting         @default(ESSAY)
+  targetWords      Int                  @default(150)
   SoalWriting      SoalWriting[]
   writingHistories UserWritingHistory[]
   pakets           Paket[]              @relation("PaketToWriting")
@@ -164,14 +164,14 @@ model Writing {
 }
 
 model SoalWriting {
-  id            Int             @id @default(autoincrement())
-  writingId     Int
-  jenis         JenisWriting
-  question      String
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  AnswerWriting              AnswerWriting[]
-  writing                    Writing                  @relation(fields: [writingId], references: [id], onDelete: Cascade)
+  id                       Int                      @id @default(autoincrement())
+  writingId                Int
+  jenis                    JenisWriting
+  question                 String
+  createdAt                DateTime                 @default(now())
+  updatedAt                DateTime                 @updatedAt
+  AnswerWriting            AnswerWriting[]
+  writing                  Writing                  @relation(fields: [writingId], references: [id], onDelete: Cascade)
   userSoalWritingHistories UserSoalWritingHistory[]
 
   @@index([writingId], map: "SoalWriting_writingId_fkey")
@@ -203,10 +203,10 @@ model Speaking {
   id                Int                   @id @default(autoincrement())
   title             String
   content           String
-  jenis             JenisSpeaking
   audioUrl          String?
   createdAt         DateTime              @default(now())
   updatedAt         DateTime              @updatedAt
+  jenis             JenisSpeaking
   SoalSpeaking      SoalSpeaking[]
   speakingHistories UserSpeakingHistory[]
   pakets            Paket[]               @relation("PaketToSpeaking")
@@ -241,79 +241,87 @@ model Paket {
   id                  Int                 @id @default(autoincrement())
   name                String
   description         String?
+  createdAt           DateTime            @updatedAt
   paketCategoryId     Int?
   subPaketCategoryId  Int?
-  isFree              Boolean @default(false)
+  isFree              Boolean             @default(false)
+  dataUsers           DataUser[]
+  landingPaket        LandingPaket?
   paketCategory       PaketCategory?      @relation(fields: [paketCategoryId], references: [id])
   subPaketCategory    SubPaketCategory?   @relation(fields: [subPaketCategoryId], references: [id])
-  createdAt           DateTime            @updatedAt
   listeningCategories ListeningCategory[] @relation("ListeningCategoryToPaket")
   listenings          Listening[]         @relation("ListeningToPaket")
+  paketPembelians     PaketPembelian[]    @relation("PaketToPaketPembelian")
   readings            Reading[]           @relation("PaketToReading")
   readingCategories   ReadingCategory[]   @relation("PaketToReadingCategory")
   speakings           Speaking[]          @relation("PaketToSpeaking")
   speakingCategories  SpeakingCategory[]  @relation("PaketToSpeakingCategory")
   writings            Writing[]           @relation("PaketToWriting")
   writingCategories   WritingCategory[]   @relation("PaketToWritingCategory")
-  dataUsers           DataUser[]
-  landingPaket        LandingPaket?
-  paketPembelians     PaketPembelian[]
 
   @@index([paketCategoryId], map: "Paket_paketCategoryId_fkey")
   @@index([subPaketCategoryId], map: "Paket_subPaketCategoryId_fkey")
 }
 
-model PaketPembelian{
-  id        Int      @id @default(autoincrement())
-  name      String
-  price     Int
-  label     LabelPaket
-  description String?
-  duration    Int      @default(0)
-  pakets      Paket[]
-  pembelianUsers PembelianUser[]
+model PaketPembelian {
+  id                Int                @id @default(autoincrement())
+  name              String
+  price             Int
+  label             LabelPaket
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  description       String?
+  duration          Int                @default(0)
   historyPembelians HistoryPembelian[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  pembelianUsers    PembelianUser[]
+  pakets            Paket[]            @relation("PaketToPaketPembelian")
 }
 
 model PembelianUser {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id               Int             @id @default(autoincrement())
+  userId           Int
   paketPembelianId Int
-  paketPembelian PaketPembelian @relation(fields: [paketPembelianId], references: [id], onDelete: Cascade)
-  duration  Int
-  status    StatusPembelian
-  merchantRef String?
-  amount    Int      @default(0)
-  expiredDuration DateTime
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  duration         Int
+  status           StatusPembelian
+  expiredDuration  DateTime
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  amount           Int             @default(0)
+  merchantRef      String?
+  bank             String?
+  paketPembelian   PaketPembelian  @relation(fields: [paketPembelianId], references: [id], onDelete: Cascade)
+  user             User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([paketPembelianId], map: "PembelianUser_paketPembelianId_fkey")
+  @@index([userId], map: "PembelianUser_userId_fkey")
 }
 
 model HistoryPembelian {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id               Int             @id @default(autoincrement())
+  userId           Int
   paketPembelianId Int
-  paketPembelian PaketPembelian @relation(fields: [paketPembelianId], references: [id], onDelete: Cascade)
-  duration  Int
-  status    StatusPembelian
-  merchantRef String?
-  amount    Int      @default(0)
-  expiredDuration DateTime
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  duration         Int
+  status           StatusPembelian
+  expiredDuration  DateTime
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  amount           Int             @default(0)
+  merchantRef      String?
+  bank             String?
+  paketPembelian   PaketPembelian  @relation(fields: [paketPembelianId], references: [id], onDelete: Cascade)
+  user             User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([paketPembelianId], map: "HistoryPembelian_paketPembelianId_fkey")
+  @@index([userId], map: "HistoryPembelian_userId_fkey")
 }
 
 model LandingPaket {
   id        Int      @id @default(autoincrement())
   paketId   Int      @unique
-  paket     Paket    @relation(fields: [paketId], references: [id], onDelete: Cascade)
   order     Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  paket     Paket    @relation(fields: [paketId], references: [id], onDelete: Cascade)
 }
 
 model UserReadingHistory {
@@ -406,9 +414,9 @@ model UserWritingHistory {
   score         Int
   createdAt     DateTime                 @default(now())
   updatedAt     DateTime                 @updatedAt
+  soalHistories UserSoalWritingHistory[]
   dataUser      DataUser                 @relation(fields: [userDataId], references: [id], onDelete: Cascade)
   writing       Writing                  @relation(fields: [writingId], references: [id], onDelete: Cascade)
-  soalHistories UserSoalWritingHistory[]
 
   @@index([userDataId], map: "UserWritingHistory_userDataId_fkey")
   @@index([writingId], map: "UserWritingHistory_writingId_fkey")
@@ -421,8 +429,8 @@ model UserSoalWritingHistory {
   answer               String             @db.Text
   createdAt            DateTime           @default(now())
   updatedAt            DateTime           @updatedAt
-  userWritingHistory   UserWritingHistory @relation(fields: [userWritingHistoryId], references: [id], onDelete: Cascade)
   soalWriting          SoalWriting        @relation(fields: [soalWritingId], references: [id], onDelete: Cascade)
+  userWritingHistory   UserWritingHistory @relation(fields: [userWritingHistoryId], references: [id], onDelete: Cascade)
 
   @@index([userWritingHistoryId], map: "UserSoalWritingHistory_userWritingHistoryId_fkey")
   @@index([soalWritingId], map: "UserSoalWritingHistory_soalWritingId_fkey")
@@ -443,14 +451,13 @@ model UserSpeakingHistory {
   @@index([userDataId], map: "UserSpeakingHistory_userDataId_fkey")
 }
 
-
 model PaketCategory {
-  id           Int                @id @default(autoincrement())
-  categoryName String
-  createdAt    DateTime           @default(now())
-  updatedAt    DateTime           @updatedAt
+  id            Int                @id @default(autoincrement())
+  categoryName  String
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  pakets        Paket[]
   subCategories SubPaketCategory[]
-  pakets       Paket[]
 }
 
 model SubPaketCategory {
@@ -459,10 +466,22 @@ model SubPaketCategory {
   subCategoryName String
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
-  paketCategory   PaketCategory @relation(fields: [paketCategoryId], references: [id], onDelete: Cascade)
   pakets          Paket[]
+  paketCategory   PaketCategory @relation(fields: [paketCategoryId], references: [id], onDelete: Cascade)
 
   @@index([paketCategoryId], map: "SubPaketCategory_paketCategoryId_fkey")
+}
+
+model Setting {
+  id                    Int      @id @default(autoincrement())
+  logoUrl               String?
+  testInstructions      String?  @db.LongText
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  listeningInstructions String?  @db.LongText
+  readingInstructions   String?  @db.LongText
+  speakingInstructions  String?  @db.LongText
+  writingInstructions   String?  @db.LongText
 }
 
 enum JenisSpeaking {
@@ -487,16 +506,4 @@ enum StatusPembelian {
   FAILED
   EXPIRED
   OVERDUE
-}
-
-model Setting {
-  id              Int      @id @default(autoincrement())
-  logoUrl         String?
-  testInstructions String? @db.LongText
-  readingInstructions   String? @db.LongText
-  listeningInstructions String? @db.LongText
-  writingInstructions   String? @db.LongText
-  speakingInstructions  String? @db.LongText
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
 }
