@@ -50,7 +50,8 @@ export const deletePaketPembelian = async (req, res) => {
 
 export const getAllUserPembelians = async (req, res) => {
     try {
-        const results = await paketPembelianService.getAllUserPembelians();
+        const userId = req.user.id;
+        const results = await paketPembelianService.getAllUserPembelians(userId);
         res.status(200).json({ success: true, data: results });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });

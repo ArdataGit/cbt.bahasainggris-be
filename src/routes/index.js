@@ -20,6 +20,7 @@ import settingRoutes from '../modules/setting/setting.routes.js';
 import landingPaketRoutes from '../modules/landing-paket/landing-paket.routes.js';
 import paketPembelianRoutes from '../modules/paket-pembelian/paket-pembelian.routes.js';
 import tripayRoutes from '../modules/tripay/tripay.routes.js';
+import bannerRoutes from '../modules/banner/banner.routes.js';
 import upload from '../utils/upload.js';
 
 const router = express.Router();
@@ -76,5 +77,6 @@ router.use('/settings', settingRoutes);
 router.use('/landing-pakets', landingPaketRoutes);
 router.use('/paket-pembelians', paketPembelianRoutes);
 router.use('/tripay', tripayRoutes);
+router.use('/banners', bannerRoutes);
 
 export default router;

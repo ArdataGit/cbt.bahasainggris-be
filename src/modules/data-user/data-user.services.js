@@ -27,3 +27,11 @@ export const getDataUserById = async (id) => {
         where: { id: parseInt(id) }
     });
 };
+
+export const countRegisteredUsers = async () => {
+    return await prisma.user.count({
+        where: {
+            role: 'user'
+        }
+    });
+};

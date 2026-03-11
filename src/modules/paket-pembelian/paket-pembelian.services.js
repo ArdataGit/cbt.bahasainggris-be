@@ -80,19 +80,19 @@ export const deletePaketPembelian = async (id) => {
     });
 };
 
-export const getAllUserPembelians = async () => {
+export const getAllUserPembelians = async (userId) => {
     return await prisma.pembelianUser.findMany({
+        where: {
+            userId: parseInt(userId),
+            status: 'SUCCESS',
+            expiredDuration: {
+                gt: new Date()
+            }
+        },
         include: {
             paketPembelian: {
                 include: {
                     pakets: true
-                }
-            },
-            user: {
-                select: {
-                    id: true,
-                    name: true,
-                    email: true
                 }
             }
         },

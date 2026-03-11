@@ -42,3 +42,12 @@ export const getDataUserById = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
+export const countRegisteredUsers = async (req, res) => {
+    try {
+        const count = await dataUserService.countRegisteredUsers();
+        res.status(200).json({ success: true, data: count });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
