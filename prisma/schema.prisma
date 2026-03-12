@@ -28,6 +28,7 @@ model User {
   listeningHistories UserListeningHistory[]
   writingHistories   UserWritingHistory[]
   speakingHistories  UserSpeakingHistory[]
+  notifications     Notification[]
 }
 
 model DataUser {
@@ -535,4 +536,18 @@ enum StatusPembelian {
   FAILED
   EXPIRED
   OVERDUE
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  title     String
+  message   String   @db.Text
+  type      String   // e.g., "PURCHASE", "TEST_COMPLETION", "INFO"
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }

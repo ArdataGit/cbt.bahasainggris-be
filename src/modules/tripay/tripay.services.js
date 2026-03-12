@@ -1,8 +1,5 @@
 import axios from 'axios';
 import crypto from 'crypto';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 const API_KEY = process.env.TRIPAY_API_KEY;
 const PRIVATE_KEY = process.env.TRIPAY_PRIVATE_KEY;

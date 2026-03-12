@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { createNotification } from '../notification/notification.services.js';
 const prisma = new PrismaClient();
 
 export const getAllPaketPembelians = async () => {
@@ -130,6 +131,14 @@ export const updateUserPembelianStatus = async (id, status) => {
                 merchantRef: pembelian.merchantRef
             }
         });
+
+        // Trigger notification for successful manual activation
+        await createNotification(
+            pembelian.userId,
+            'Pembayaran Berhasil',
+            `Pembayaran/aktivitas untuk paket ${pembelian.paketPembelian.name} telah berhasil dikonfirmasi. Selamat belajar!`,
+            'PURCHASE'
+        );
     }
 
     return await prisma.pembelianUser.update({

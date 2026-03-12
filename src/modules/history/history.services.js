@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { sendScoreEmail as sendEmailUtil } from '../../utils/email.js';
+import { createNotification } from '../notification/notification.services.js';
 const prisma = new PrismaClient();
 
 export const saveReadingHistory = async (data) => {
@@ -35,7 +36,22 @@ export const saveReadingHistory = async (data) => {
     });
   });
 
-  return Promise.all(historyPromises);
+  const results_1 = await Promise.all(historyPromises);
+  
+  if (dataUser?.userId) {
+      const fullDataUser = await prisma.dataUser.findUnique({
+          where: { id: parseInt(userDataId) },
+          include: { paket: true }
+      });
+      await createNotification(
+          dataUser.userId,
+          'Sesi Reading Selesai',
+          `Anda telah menyelesaikan sesi Reading pada paket ${fullDataUser?.paket?.name || 'Soal'}.`,
+          'TEST_COMPLETION'
+      );
+  }
+
+  return results_1;
 };
 
 export const saveListeningHistory = async (data) => {
@@ -71,7 +87,22 @@ export const saveListeningHistory = async (data) => {
       });
     });
   
-    return Promise.all(historyPromises);
+    const results_1 = await Promise.all(historyPromises);
+
+    if (dataUser?.userId) {
+        const fullDataUser = await prisma.dataUser.findUnique({
+            where: { id: parseInt(userDataId) },
+            include: { paket: true }
+        });
+        await createNotification(
+            dataUser.userId,
+            'Sesi Listening Selesai',
+            `Anda telah menyelesaikan sesi Listening pada paket ${fullDataUser?.paket?.name || 'Soal'}.`,
+            'TEST_COMPLETION'
+        );
+    }
+
+    return results_1;
 };
 
 export const saveWritingHistory = async (data) => {
@@ -103,7 +134,22 @@ export const saveWritingHistory = async (data) => {
       });
     });
   
-    return Promise.all(historyPromises);
+    const results_1 = await Promise.all(historyPromises);
+
+    if (dataUser?.userId) {
+        const fullDataUser = await prisma.dataUser.findUnique({
+            where: { id: parseInt(userDataId) },
+            include: { paket: true }
+        });
+        await createNotification(
+            dataUser.userId,
+            'Sesi Writing Selesai',
+            `Anda telah menyelesaikan sesi Writing pada paket ${fullDataUser?.paket?.name || 'Soal'}. Silakan tunggu penilaian dari admin.`,
+            'TEST_COMPLETION'
+        );
+    }
+
+    return results_1;
 };
 
 export const saveSpeakingHistory = async (data) => {
@@ -129,7 +175,22 @@ export const saveSpeakingHistory = async (data) => {
       });
     });
   
-    return Promise.all(historyPromises);
+    const results_1 = await Promise.all(historyPromises);
+
+    if (dataUser?.userId) {
+        const fullDataUser = await prisma.dataUser.findUnique({
+            where: { id: parseInt(userDataId) },
+            include: { paket: true }
+        });
+        await createNotification(
+            dataUser.userId,
+            'Sesi Speaking Selesai',
+            `Anda telah menyelesaikan sesi Speaking pada paket ${fullDataUser?.paket?.name || 'Soal'}. Silakan tunggu penilaian dari admin.`,
+            'TEST_COMPLETION'
+        );
+    }
+
+    return results_1;
 };
 
 export const getUserHistory = async (userDataId) => {

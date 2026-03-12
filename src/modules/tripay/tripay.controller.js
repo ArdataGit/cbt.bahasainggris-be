@@ -1,5 +1,6 @@
 import * as tripayService from './tripay.services.js';
 import prisma from '../../utils/prisma.js';
+import { createNotification } from '../notification/notification.services.js';
 
 export const getChannels = async (req, res) => {
     try {
@@ -42,6 +43,14 @@ export const createPayment = async (req, res) => {
                 expiredDuration: expiredPayment
             }
         });
+
+        // Trigger notification for pending payment
+        await createNotification(
+            userId,
+            'Tagihan Pembayaran',
+            `Tagihan untuk paket ${paket.name} telah dibuat. Silakan selesaikan pembayaran Anda menggunakan metode ${method}.`,
+            'PURCHASE'
+        );
 
         const orderItems = [
             {
@@ -121,6 +130,14 @@ export const handleCallback = async (req, res) => {
                     })
                 ]);
                 
+                // Create notification for user
+                await createNotification(
+                    pembelian.userId,
+                    'Pembayaran Berhasil',
+                    `Pembayaran untuk paket ${pembelian.paketPembelian.name} telah berhasil dikonfirmasi. Selamat belajar!`,
+                    'PURCHASE'
+                );
+
                 console.log(`Payment confirmed for ${merchant_ref}`);
             }
         }
