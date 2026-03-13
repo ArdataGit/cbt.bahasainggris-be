@@ -2,6 +2,7 @@ import * as notificationService from './notification.services.js';
 
 export const getNotifications = async (req, res) => {
     try {
+        console.log('getNotifications Request User:', JSON.stringify(req.user));
         const notifications = await notificationService.getUserNotifications(req.user.id);
         const unreadCount = await notificationService.getUnreadCount(req.user.id);
         res.status(200).json({
