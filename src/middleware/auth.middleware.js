@@ -6,13 +6,11 @@ export const authenticateToken = (req, res, next) => {
   const token = authHeader && authHeader.split(' ')[1];
 
   if (!token) {
-    console.log('[Auth] No token provided');
     return res.status(401).json({ message: 'Access denied. No token provided.' });
   }
 
   jwt.verify(token, JWT_SECRET, (err, user) => {
     if (err) {
-      console.log('[Auth] Token verification failed:', err.message);
       return res.status(403).json({ message: 'Invalid or expired token.' });
     }
     req.user = user;
