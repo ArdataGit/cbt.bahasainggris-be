@@ -37,7 +37,7 @@ export const markAllRead = async (req, res) => {
 export const sendBroadcast = async (req, res) => {
     try {
         const { title, message, type } = req.body;
-        const result = await notificationService.broadcastNotification(title, message, type || 'INFO');
+        const result = await notificationService.broadcastNotification(title, message, type || 'ADMIN');
         res.status(201).json({ 
             success: true, 
             message: `Notifikasi dikirim ke ${result.count} user`,
