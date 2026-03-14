@@ -551,3 +551,11 @@ model Notification {
 
   @@index([userId])
 }
+
+model WhatsappAdmin{
+  id        Int      @id @default(autoincrement())
+  number    String
+  message   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

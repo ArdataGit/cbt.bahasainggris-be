@@ -22,6 +22,7 @@ import paketPembelianRoutes from '../modules/paket-pembelian/paket-pembelian.rou
 import tripayRoutes from '../modules/tripay/tripay.routes.js';
 import bannerRoutes from '../modules/banner/banner.routes.js';
 import notificationRoutes from '../modules/notification/notification.routes.js';
+import whatsappAdminRoutes from '../modules/whatsapp-admin/whatsapp-admin.routes.js';
 import upload from '../utils/upload.js';
 
 const router = express.Router();
@@ -80,5 +81,6 @@ router.use('/paket-pembelians', paketPembelianRoutes);
 router.use('/tripay', tripayRoutes);
 router.use('/banners', bannerRoutes);
 router.use('/notifications', notificationRoutes);
+router.use('/whatsapp-admins', whatsappAdminRoutes);
 
 export default router;
