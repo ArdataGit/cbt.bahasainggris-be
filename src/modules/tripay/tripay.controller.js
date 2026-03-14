@@ -23,26 +23,49 @@ export const createPayment = async (req, res) => {
             return res.status(404).json({ success: false, message: 'Paket tidak ditemukan.' });
         }
 
-        // Create a record in PembelianUser first
+        // Check for existing pending payment for this user and package
+        const existingPembelian = await prisma.pembelianUser.findFirst({
+            where: {
+                userId: userId,
+                paketPembelianId: paket.id,
+                status: 'PENDING'
+            }
+        });
+
         const merchantRef = `INV-${Date.now()}-${userId}`;
         
         // Calculate expired duration (default 24h for payment to be completed)
         const expiredPayment = new Date();
         expiredPayment.setHours(expiredPayment.getHours() + 24);
 
-        const pembelian = await prisma.pembelianUser.create({
-            data: {
-                userId: userId,
-                paketPembelianId: paket.id,
-                status: 'PENDING',
-                merchantRef: merchantRef,
-                amount: paket.price,
-                duration: paket.duration,
-                bank: method,
-                phone: user.phone || '08123456789',
-                expiredDuration: expiredPayment
-            }
-        });
+        let pembelian;
+        if (existingPembelian) {
+            // Update existing pending record with new merchantRef and method
+            pembelian = await prisma.pembelianUser.update({
+                where: { id: existingPembelian.id },
+                data: {
+                    merchantRef: merchantRef,
+                    bank: method,
+                    expiredDuration: expiredPayment,
+                    updatedAt: new Date()
+                }
+            });
+        } else {
+            // Create a record in PembelianUser first
+            pembelian = await prisma.pembelianUser.create({
+                data: {
+                    userId: userId,
+                    paketPembelianId: paket.id,
+                    status: 'PENDING',
+                    merchantRef: merchantRef,
+                    amount: paket.price,
+                    duration: paket.duration,
+                    bank: method,
+                    phone: user.phone || '08123456789',
+                    expiredDuration: expiredPayment
+                }
+            });
+        }
 
         // Trigger notification for pending payment
         await createNotification(
@@ -75,6 +98,12 @@ export const createPayment = async (req, res) => {
             orderItems,
             callbackUrl,
             returnUrl
+        });
+
+        // Update the pembelian record with the checkout URL from Tripay
+        await prisma.pembelianUser.update({
+            where: { id: pembelian.id },
+            data: { checkoutUrl: transaction.data.checkout_url }
         });
 
         res.status(200).json(transaction);
@@ -125,6 +154,7 @@ export const handleCallback = async (req, res) => {
                             duration: pembelian.duration,
                             bank: pembelian.bank,
                             phone: pembelian.phone,
+                            checkoutUrl: pembelian.checkoutUrl,
                             expiredDuration: expiredDate
                         }
                     })
