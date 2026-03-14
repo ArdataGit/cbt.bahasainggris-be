@@ -81,7 +81,29 @@ export const deletePaketPembelian = async (id) => {
     });
 };
 
-export const getAllUserPembelians = async (userId) => {
+export const getAllUserPembelians = async (userId, role) => {
+    if (role === 'admin') {
+        return await prisma.pembelianUser.findMany({
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true
+                    }
+                },
+                paketPembelian: {
+                    include: {
+                        pakets: true
+                    }
+                }
+            },
+            orderBy: {
+                createdAt: 'desc'
+            }
+        });
+    }
+
     return await prisma.pembelianUser.findMany({
         where: {
             userId: parseInt(userId),

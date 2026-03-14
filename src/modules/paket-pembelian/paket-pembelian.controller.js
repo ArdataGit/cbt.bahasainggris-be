@@ -51,7 +51,8 @@ export const deletePaketPembelian = async (req, res) => {
 export const getAllUserPembelians = async (req, res) => {
     try {
         const userId = req.user.id;
-        const results = await paketPembelianService.getAllUserPembelians(userId);
+        const role = req.user.role;
+        const results = await paketPembelianService.getAllUserPembelians(userId, role);
         res.status(200).json({ success: true, data: results });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
